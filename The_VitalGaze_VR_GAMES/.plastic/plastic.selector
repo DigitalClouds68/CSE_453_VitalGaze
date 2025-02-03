@@ -1,4 +1,0 @@
-repository "VitalGaze_3D_Game@CSE450_VitalGaze@cloud"
-  path "/"
-    br "/main"
-    co "/main"
