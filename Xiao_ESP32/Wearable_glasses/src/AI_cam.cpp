@@ -146,7 +146,7 @@ static int ei_camera_get_data(size_t offset, size_t length, float *out_ptr)
 *
 * @param[in]  debug  Get debug info if true
 */
-void AI_Dection()
+void AI_Detection()
 {
 
     // instead of wait_ms, we'll wait on the signal, this allows threads to cancel us...
