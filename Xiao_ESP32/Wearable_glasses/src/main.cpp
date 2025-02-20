@@ -6,5 +6,5 @@ void setup(){
 }
 
 void loop(){
-    AI_Dection();
+    AI_Detection();
 }
