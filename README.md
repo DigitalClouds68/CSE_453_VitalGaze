@@ -2,23 +2,46 @@
 
 ## Overview
 
-VitalGaze is an eye-training project that aims to help users improve their eye coordination and tracking abilities through interactive VR games and glasses-embedded LEDs. This project was developed as part of the CSE 450 course(Currently for phase 1, software part), incorporating concepts from game development, software development, and user feedback.
+VitalGaze is an eye-training project that aims to help users improve their eye coordination and tracking abilities through interactive VR games and glasses-embedded LEDs. This project was developed as part of the **CSE 453** course (currently in **Phase 1: Software Development**), incorporating concepts from **game development, backend services, and user feedback**.
 
-## Files Description
+## 📁 Files & Folder Structure
 
-- **The_VitalGaze_VR_GAMES**: This folder contains all the VR games developed for the VitalGaze project. Each game is aimed at enhancing eye movement tracking and providing a fun, interactive experience for the user.
-- (To do...)
+### 🕹️ **VR Games (Frontend)**
+- **The_VitalGaze_VR_GAMES/** → Contains all the **Unity-based VR games** developed for the VitalGaze project.
+- **(To do... Add frontend details)**
 
-## Prerequisites
+### 🖥 **Backend (Node.js Server)**
+- **Server_BackEnd/**
+  - `config/db.js` → Database configuration (MongoDB)
+  - `models/` → Mongoose schemas for **User, Sessions, Eye Tracking Logs, User Settings**
+  - `routes/authRoutes.js` → Authentication API (Signup, Login)
+  - `apiServer.js` → Main Express API server (RESTful)
+  - `websocketServer.js` → WebSocket server for real-time eye-tracking data communication
+  - `package.json` → Backend dependencies
 
-- **Unity Version**: This project is built using Unity 2021.3.45f1. It is recommended to use this version for compatibility purposes. However, other recent versions of Unity may also work.
-- **(To do...)**
+---
 
-## Installation & Usage for "The_VitalGaze_VR_GAMES"
+## 🛠 **Prerequisites**
+To run this project, make sure you have the following installed:
 
-To run this project on your local machine:
+1. **Backend Requirements (for `Server_BackEnd/`)**
+   - [Node.js (v16+)](https://nodejs.org/) - Required to run the backend
+   - [MongoDB](https://www.mongodb.com/) - Used as the database
+   - **Postman (optional)** - To test API requests
 
-1. **Download Unity**:  
-   Make sure you have Unity version 2021.3.45f1 or an equivalent version installed on your computer.
+2. **Frontend Requirements (for VR Games)**
+   - **Unity Version:** This project is built using **Unity 2021.3.45f1**.
+   - **Expo (for React Native App, if applicable)**
 
-2. **(To do...)**
+---
+
+## 🚀 **Backend Installation & Setup (Server_BackEnd)**
+To set up and run the **Node.js backend server**:
+
+### **1️⃣ Clone the Repository**
+```bash
+git clone https://github.com/DigitalClouds68/CSE_453_VitalGaze.git
+cd CSE_453_VitalGaze/Server_BackEnd
+
+### todo....
+
