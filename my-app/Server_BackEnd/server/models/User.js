@@ -1,3 +1,10 @@
+/* 用来存用户信息 */
+/*      
+        步骤：
+        1.用户登录
+        2.服务器检查 User.js 里的账号密码是否正确
+        3.登录成功后，返回 user_id
+*/
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
