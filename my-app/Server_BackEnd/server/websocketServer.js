@@ -16,6 +16,7 @@ wss.on("connection", (ws) => {
 
   /***********************************************************/
   /***********************************************************/
+  /****这一段用来模拟ESP32发送的眼部数据坐标，可删可不删*********/
   //send the gaze data to the client every 1 second 
   const interval = setInterval(() => {
     if (ws.readyState === WebSocket.OPEN) {
