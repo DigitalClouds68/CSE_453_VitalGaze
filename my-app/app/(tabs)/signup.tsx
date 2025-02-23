@@ -1,133 +1,175 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+} from "react-native";
+import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 
 const SignUpPage: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-    return (
-        <View style={styles.container}>
-          <Svg height="100%" width="100%" style={styles.gradient}>
+  const scaleAnim = new Animated.Value(1);
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.94,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  return (
+    <View style={styles.container}>
+      <Svg height="100%" width="100%" style={styles.gradient}>
         <Defs>
           <LinearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="#278EA0" stopOpacity="1" />
-            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="2" />
+            <Stop offset="0%" stopColor="#1E567D" stopOpacity="1" />
+            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="1" />
           </LinearGradient>
         </Defs>
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#gradient1)" />
       </Svg>
-            {/* White container in the middle */}
-            <View style={styles.whiteContainer}>
-                <Text style={styles.header}>Sign Up</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    placeholderTextColor="#000000"  // Set placeholder text color to black
-                    value={email}
-                    onChangeText={setEmail}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Username"
-                    placeholderTextColor="#000000"  // Set placeholder text color to black
-                    value={username}
-                    onChangeText={setUsername}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    placeholderTextColor="#000000"  // Set placeholder text color to black
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Confirm Password"
-                    placeholderTextColor="#000000"  // Set placeholder text color to black
-                    secureTextEntry
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                />
-                <TouchableOpacity style={styles.signInButton} onPress={() => {}}>
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                </TouchableOpacity>
-                <Text style={styles.signUpLink}>
-                    Already on VitalGaze? <Text style={styles.link}>Sign In</Text>
-                </Text>
-            </View>
-        </View>
-    );
+
+      <View style={styles.whiteContainer}>
+        <Text style={styles.header}>Create Your Account</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#555"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          placeholderTextColor="#555"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#555"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          placeholderTextColor="#555"
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
+
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <TouchableOpacity
+            style={styles.signUpButton}
+            onPress={() => {}}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+          >
+            <Text style={styles.buttonText}>Sign Up</Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <Text style={styles.signInText}>
+          Already have an account?{" "}
+          <Text style={styles.signInLink}>Sign In</Text>
+        </Text>
+      </View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'linear-gradient(180deg, #227788 0%, #FFFFFF 100%)',
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
   },
-    whiteContainer: {
-        width: '90%',  // Container width
-        maxWidth: 350, // Maximum width for the container
-        backgroundColor: '#ffffff',
-        borderRadius: 12,
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',  // Center content vertically
-        shadowColor: '#000',  // Optional shadow effect
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 5,  // Shadow for Android
-    },
-    header: {
-        fontSize: 29.344,
-        fontWeight: '600',
-        textAlign: 'center',
-        marginBottom: 20,  // Adjusted margin for better spacing
-        color: '#000000',
-    },
-    input: {
-        width: '100%',
-        height: 45,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 10,
-        paddingHorizontal: 12,
-        marginBottom: 16,
-        fontSize: 18,
-        color: '#000',
-    },
-    signInButton: {
-        backgroundColor: '#000000',
-        borderRadius: 8,
-        paddingVertical: 12,
-        paddingHorizontal: 50,
-        marginTop: 30,
-        marginBottom: 10,
-    },
-    buttonText: {
-        color: '#FFFFFF',
-        fontSize: 22.208,
-        textAlign: 'center',
-    },
-    signUpLink: {
-        fontSize: 17.6,
-        color: '#000',
-        textAlign: 'center',
-    },
-    link: {
-        color: 'blue',
-    },
-    gradient: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-    },
+  gradient: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
+  whiteContainer: {
+    width: "90%",
+    maxWidth: 420,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderRadius: 18,
+    padding: 32,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 10,
+    backdropFilter: "blur(14px)",
+  },
+  header: {
+    fontSize: 34,
+    fontWeight: "900",
+    textAlign: "center",
+    marginBottom: 26,
+    color: "#1E567D",
+  },
+  input: {
+    width: "100%",
+    height: 54,
+    borderWidth: 2,
+    borderColor: "#ddd",
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    fontSize: 18,
+    color: "#333",
+    marginBottom: 18,
+    backgroundColor: "#f9f9f9",
+  },
+  signUpButton: {
+    backgroundColor: "#1E567D",
+    borderRadius: 14,
+    paddingVertical: 18,
+    width: "100%",
+    alignItems: "center",
+    marginTop: 24,
+    shadowColor: "#1E567D",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 14,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 1.2,
+  },
+  signInText: {
+    fontSize: 18,
+    color: "#666",
+    marginTop: 24,
+  },
+  signInLink: {
+    color: "#1E567D",
+    fontWeight: "800",
+  },
 });
 
 export default SignUpPage;

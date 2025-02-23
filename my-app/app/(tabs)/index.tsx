@@ -7,7 +7,7 @@ const StartPage: React.FC = () => {
   const router = useRouter();
 
   const handleStartNow = () => {
-    // Navigate to the SignIn page
+    // Navigate to the next page
     router.push('/(tabs)/two');
   };
 
@@ -37,32 +37,38 @@ const StartPage: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#EEF4F7',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'linear-gradient(180deg, #227788 0%, #FFFFFF 100%)',
+  },
+  gradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: -1, // Ensures the gradient stays behind other elements
   },
   main: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
+    width: '90%',
   },
   subtitle: {
-    top: -90,
-    fontSize: 65,
+    fontSize: 40,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#278EA0',
     paddingHorizontal: 30,
+    textAlign: 'center',
+    marginBottom: 10,
   },
   description: {
-    top: -90,
-    fontSize: 20,
-    color: '#000',
+    fontSize: 18,
+    color: '#444',
     textAlign: 'center',
     paddingHorizontal: 25,
-    marginVertical: 10,
+    marginBottom: 20,
   },
   startButton: {
-    top: -90,
     backgroundColor: '#278EA0',
     paddingVertical: 15,
     paddingHorizontal: 50,
@@ -74,11 +80,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: 'white',
-  },
-  gradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
   },
 });
 

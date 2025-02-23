@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter, usePathname } from 'expo-router';  // Import usePathname to track the current route
+import { useRouter, usePathname } from 'expo-router';
 
 const EyeTrackingPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('Eye Tracking');  // Set initial active tab
+  const [activeTab, setActiveTab] = useState('Eye Tracking');
   const router = useRouter();
-  const pathname = usePathname();  // Use pathname to track current page
-  
-  // Update active tab based on current route
+  const pathname = usePathname();
+
   useEffect(() => {
     if (pathname === '/(tabs)/eye_tracking') {
-      setActiveTab('Eye Tracking');  // Keep Eye Tracking bold for EyeTrackingPage
+      setActiveTab('Eye Tracking');
     }
   }, [pathname]);
 
-  // Handle tab change
   const handleTabChange = (tab: string) => {
     if (tab === 'Training') {
       router.push('/(tabs)/training');
@@ -25,43 +23,28 @@ const EyeTrackingPage: React.FC = () => {
     }
   };
 
-  // Handle back navigation
   const handleBack = () => {
     router.push('/(tabs)/home');
   };
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Text style={styles.arrow}>←</Text>
       </TouchableOpacity>
 
-      {/* Tab Headers */}
       <View style={styles.nav}>
-        <TouchableOpacity onPress={() => handleTabChange('Training')}>
-          <Text style={[styles.tab, activeTab === 'Training' && styles.activeTab]}>
-            Training
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleTabChange('Eye Tracking')}>
-          <Text style={[styles.tab, activeTab === 'Eye Tracking' && styles.activeTab]}>
-            Eye Tracking
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleTabChange('Progress')}>
-          <Text style={[styles.tab, activeTab === 'Progress' && styles.activeTab]}>
-            Progress
-          </Text>
-        </TouchableOpacity>
+        {['Training', 'Eye Tracking', 'Progress'].map((tab) => (
+          <TouchableOpacity key={tab} onPress={() => handleTabChange(tab)}>
+            <Text style={[styles.tab, activeTab === tab && styles.activeTab]}>
+              {tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {/* Visualization Section */}
       <View style={styles.visualization}>
-        {/* Eye icon visualization */}
         <View style={styles.eyeIcon} />
-        
-        {/* Metrics below the eye icon */}
         <Text style={styles.visualizationText}>Max Eye Movement: N/A</Text>
         <Text style={styles.visualizationText}>Eye Movement Analytics: N/A</Text>
       </View>
@@ -72,49 +55,66 @@ const EyeTrackingPage: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#EEF4F7',
     padding: 20,
+    alignItems: 'center',
   },
   backButton: {
+    alignSelf: 'flex-start',
     marginBottom: 10,
   },
   arrow: {
     fontSize: 30,
-    color: '#278EA0',  // Consistent color for back arrow
+    color: '#278EA0',
+    fontWeight: 'bold',
   },
   nav: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 20,
-    borderBottomWidth: 2,  // Add border for the active tab to be underlined
-    borderBottomColor: '#278EA0',  // Consistent blue color for active tab underline
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 },
   },
   tab: {
-    fontSize: 16,
-    color: '#7a7a7a',  // Gray color for inactive tabs
-    paddingBottom: 8,  // Space for the underline
+    fontSize: 18,
+    color: '#7A7A7A',
+    paddingVertical: 10,
+    fontWeight: '500',
   },
   activeTab: {
+    color: '#278EA0',
     fontWeight: 'bold',
-    color: '#278EA0',  // Highlight active tab in blue
-    borderBottomWidth: 2,
-    borderBottomColor: '#278EA0',  // Add underline to active tab
+    borderBottomWidth: 3,
+    borderBottomColor: '#278EA0',
   },
   visualization: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '90%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 10,
   },
   eyeIcon: {
-    width: 100,
-    height: 100,
-    backgroundColor: 'lightgray',
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    backgroundColor: '#D9EFFF',
+    borderRadius: 60,
     marginBottom: 20,
   },
   visualizationText: {
-    fontSize: 16,
-    color: '#565555', 
+    fontSize: 18,
+    color: '#444',
+    fontWeight: '500',
     marginVertical: 5,
   },
 });
