@@ -17,8 +17,18 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
+  /*
+  // Password length must be at least 6 characters
+  if (this.password.length < 6) {
+    throw new Error("Password length must be at least 6 characters");
+  }
+  // Password length must be at most 20 characters
+  if (this.password.length > 20) {
+    throw new Error("Password length must be at most 20 characters");
+  }
+  */
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("User", UserSchema, "vitalgaze_users");
