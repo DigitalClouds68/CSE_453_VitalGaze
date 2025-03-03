@@ -28,7 +28,8 @@ To run this project, make sure you have the following installed:
    - [Node.js (v16+)](https://nodejs.org/) - Required to run the backend
    - [MongoDB](https://www.mongodb.com/) - Used as the database(You better download the MongoDB Compass)
                                              (连接设置👇)
-     ![image](https://github.com/user-attachments/assets/c7385d92-0022-44fb-8ed3-099b8006043d)
+     ![image](![image](https://github.com/user-attachments/assets/3729def0-07eb-443e-a0e2-9987c5c53e9f)
+)
    - **Postman (optional)** - To test API requests
 
 2. **Frontend Requirements (for VR Games)**
