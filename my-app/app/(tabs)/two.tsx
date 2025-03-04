@@ -4,17 +4,16 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Animated,
+  Alert,
 } from "react-native";
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { useRouter } from "expo-router";
 
 const SignInPage: React.FC = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");  // Changed from username to email
   const [password, setPassword] = useState("");
   const router = useRouter();
-
   const scaleAnim = new Animated.Value(1);
 
   const handlePressIn = () => {
@@ -31,13 +30,37 @@ const SignInPage: React.FC = () => {
     }).start();
   };
 
-  const handleSignIn = () => {
-    router.push("/(tabs)/home");
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please enter email and password");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://192.168.1.217:5000/api/auth/login", {  // Updated API endpoint
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),  // Sending email instead of username
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Login successful!");
+        router.push("/(tabs)/home");
+      } else {
+        console.log("Login failed:", data.error || "Invalid credentials");
+        Alert.alert("Error", data.error || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      console.log("Network request failed:", error);
+      Alert.alert("Error", "Network request failed. Please check your connection.");
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Svg height="100%" width="100%" style={styles.gradient}>
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", position: "relative" }}>
+      <Svg height="100%" width="100%" style={{ position: "absolute", top: 0, left: 0 }}>
         <Defs>
           <LinearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor="#1E567D" stopOpacity="1" />
@@ -47,18 +70,18 @@ const SignInPage: React.FC = () => {
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#gradient1)" />
       </Svg>
 
-      <View style={styles.whiteContainer}>
-        <Text style={styles.header}>Sign In</Text>
+      <View style={{ width: "90%", maxWidth: 420, backgroundColor: "rgba(255, 255, 255, 0.95)", borderRadius: 18, padding: 32, alignItems: "center" }}>
+        <Text style={{ fontSize: 34, fontWeight: "900", textAlign: "center", marginBottom: 26, color: "#1E567D" }}>Sign In</Text>
 
         <TextInput
-          style={styles.input}
-          placeholder="Username"
+          style={{ width: "100%", height: 54, borderWidth: 2, borderColor: "#ddd", borderRadius: 14, paddingHorizontal: 18, fontSize: 18, color: "#333", marginBottom: 18, backgroundColor: "#f9f9f9" }}
+          placeholder="Email"  // Updated placeholder
           placeholderTextColor="#555"
-          value={username}
-          onChangeText={setUsername}
+          value={email}
+          onChangeText={setEmail}
         />
         <TextInput
-          style={styles.input}
+          style={{ width: "100%", height: 54, borderWidth: 2, borderColor: "#ddd", borderRadius: 14, paddingHorizontal: 18, fontSize: 18, color: "#333", marginBottom: 18, backgroundColor: "#f9f9f9" }}
           placeholder="Password"
           placeholderTextColor="#555"
           secureTextEntry
@@ -68,96 +91,24 @@ const SignInPage: React.FC = () => {
 
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
           <TouchableOpacity
-            style={styles.signInButton}
+            style={{ backgroundColor: "#1E567D", borderRadius: 14, paddingVertical: 18, width: "100%", alignItems: "center", marginTop: 24 }}
             onPress={handleSignIn}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
           >
-            <Text style={styles.buttonText}>Sign In</Text>
+            <Text style={{ color: "#fff", fontSize: 22, fontWeight: "800", textTransform: "uppercase", letterSpacing: 1.2 }}>Sign In</Text>
           </TouchableOpacity>
         </Animated.View>
 
-        <Text style={styles.signUpText}>
-          Not on VitalGaze? <Text style={styles.signUpLink}>Sign Up</Text>
+        <Text style={{ fontSize: 18, color: "#666", marginTop: 24 }}>
+          Not on VitalGaze?{" "}
+          <Text style={{ color: "#1E567D", fontWeight: "800" }} onPress={() => router.push("/signup")}>
+            Sign Up
+          </Text>
         </Text>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  gradient: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-  whiteContainer: {
-    width: "90%",
-    maxWidth: 420,
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    borderRadius: 18,
-    padding: 32,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 10,
-    backdropFilter: "blur(14px)",
-  },
-  header: {
-    fontSize: 34,
-    fontWeight: "900",
-    textAlign: "center",
-    marginBottom: 26,
-    color: "#1E567D",
-  },
-  input: {
-    width: "100%",
-    height: 54,
-    borderWidth: 2,
-    borderColor: "#ddd",
-    borderRadius: 14,
-    paddingHorizontal: 18,
-    fontSize: 18,
-    color: "#333",
-    marginBottom: 18,
-    backgroundColor: "#f9f9f9",
-  },
-  signInButton: {
-    backgroundColor: "#1E567D",
-    borderRadius: 14,
-    paddingVertical: 18,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 24,
-    shadowColor: "#1E567D",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 14,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: 1.2,
-  },
-  signUpText: {
-    fontSize: 18,
-    color: "#666",
-    marginTop: 24,
-  },
-  signUpLink: {
-    color: "#1E567D",
-    fontWeight: "800",
-  },
-});
 
 export default SignInPage;
