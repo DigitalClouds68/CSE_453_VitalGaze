@@ -1,41 +1,30 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons"; // 引入Ionicons图标库
 
 const SignUpPage: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState(""); // 存储邮箱
+  const [username, setUsername] = useState(""); // 存储用户名
+  const [password, setPassword] = useState(""); // 存储密码
+  const [confirmPassword, setConfirmPassword] = useState(""); // 存储确认密码
 
+  // 错误提示
   const [emailError, setEmailError] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-  const validateEmail = (text: string) => {
+  const router = useRouter();
+
+  // 验证表单字段
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    setEmail(text);
-    setEmailError(emailRegex.test(text) ? "" : "Enter a valid email (e.g., example@domain.com)");
-  };
-
-  const validateUsername = (text: string) => {
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-    setUsername(text);
-    setUsernameError(usernameRegex.test(text) ? "" : "3-20 characters, letters, numbers, and underscores only.");
-  };
-
-  const validatePassword = (text: string) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,20}$/;
-    setPassword(text);
-    setPasswordError(passwordRegex.test(text) ? "" : "6-20 characters, 1 uppercase, 1 lowercase, 1 number.");
-  };
-
-  const validateConfirmPassword = (text: string) => {
-    setConfirmPassword(text);
-    setConfirmPasswordError(text === password ? "" : "Passwords do not match.");
+    return emailRegex.test(email);
   };
 
   const handleSignUp = async () => {
+    // 校验用户输入
     if (emailError || usernameError || passwordError || confirmPasswordError) {
       Alert.alert("Error", "Please fix the errors before signing up.");
       return;
@@ -52,6 +41,7 @@ const SignUpPage: React.FC = () => {
 
       if (response.ok) {
         Alert.alert("Success", "User registered successfully!");
+        router.push('/(tabs)/signin');  // 成功后跳转到其他页面
       } else {
         Alert.alert("Error", data.error || "Signup failed");
       }
@@ -60,96 +50,154 @@ const SignUpPage: React.FC = () => {
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Create Your Account</Text>
+  // 密码验证
+  const handlePasswordChange = (password: string) => {
+    setPassword(password);
+    if (password.length < 6 || password.length > 20) {
+      setPasswordError("Password must be between 6 and 20 characters.");
+    } else {
+      setPasswordError("");
+    }
+  };
 
+  // 确认密码验证
+  const handleConfirmPasswordChange = (confirmPassword: string) => {
+    setConfirmPassword(confirmPassword);
+    if (confirmPassword !== password) {
+      setConfirmPasswordError("Passwords do not match.");
+    } else {
+      setConfirmPasswordError("");
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
+      {/* 返回按钮 */}
+      <TouchableOpacity onPress={() => router.back()} style={{ position: "absolute", top: 40, left: 20 }}>
+  <Ionicons name="arrow-back" size={30} color="#1E567D" />
+</TouchableOpacity>
+
+
+      {/* 页面顶部 logo 和设备名称 */}
+      <View style={{ alignItems: "center", marginBottom: 40 }}>
+        <Text style={{ fontSize: 40, fontWeight: "bold", color: "#1E567D" }}>VitalGaze</Text>
+        <Text style={{ fontSize: 18, color: "#666" }}>Eye Care Made Easy</Text>
+      </View>
+
+      {/* Email 输入框 */}
       <TextInput
-        style={styles.input}
+        style={{
+          width: "100%",
+          height: 54,
+          borderWidth: 2,
+          borderColor: "#ddd",
+          borderRadius: 14,
+          paddingHorizontal: 18,
+          fontSize: 18,
+          color: "#333",
+          marginBottom: 10,
+          backgroundColor: "#f9f9f9",
+        }}
         placeholder="Email"
         placeholderTextColor="#555"
         value={email}
-        onChangeText={validateEmail}
-        keyboardType="email-address"
+        onChangeText={setEmail}
+        onBlur={() => {
+          if (!validateEmail(email)) setEmailError("Please enter a valid email.");
+          else setEmailError("");
+        }}
       />
-      {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+      {emailError ? <Text style={{ color: "red", fontSize: 14 }}>{emailError}</Text> : null}
 
+      {/* Username 输入框 */}
       <TextInput
-        style={styles.input}
+        style={{
+          width: "100%",
+          height: 54,
+          borderWidth: 2,
+          borderColor: "#ddd",
+          borderRadius: 14,
+          paddingHorizontal: 18,
+          fontSize: 18,
+          color: "#333",
+          marginBottom: 10,
+          backgroundColor: "#f9f9f9",
+        }}
         placeholder="Username"
         placeholderTextColor="#555"
         value={username}
-        onChangeText={validateUsername}
+        onChangeText={setUsername}
+        onBlur={() => {
+          if (!username) setUsernameError("Username is required.");
+          else setUsernameError("");
+        }}
       />
-      {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+      {usernameError ? <Text style={{ color: "red", fontSize: 14 }}>{usernameError}</Text> : null}
 
+      {/* Password 输入框 */}
       <TextInput
-        style={styles.input}
+        style={{
+          width: "100%",
+          height: 54,
+          borderWidth: 2,
+          borderColor: "#ddd",
+          borderRadius: 14,
+          paddingHorizontal: 18,
+          fontSize: 18,
+          color: "#333",
+          marginBottom: 10,
+          backgroundColor: "#f9f9f9",
+        }}
         placeholder="Password"
         placeholderTextColor="#555"
         secureTextEntry
         value={password}
-        onChangeText={validatePassword}
+        onChangeText={handlePasswordChange}
       />
-      {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+      {passwordError ? <Text style={{ color: "red", fontSize: 14 }}>{passwordError}</Text> : null}
 
+      {/* Confirm Password 输入框 */}
       <TextInput
-        style={styles.input}
+        style={{
+          width: "100%",
+          height: 54,
+          borderWidth: 2,
+          borderColor: "#ddd",
+          borderRadius: 14,
+          paddingHorizontal: 18,
+          fontSize: 18,
+          color: "#333",
+          marginBottom: 10,
+          backgroundColor: "#f9f9f9",
+        }}
         placeholder="Confirm Password"
         placeholderTextColor="#555"
         secureTextEntry
         value={confirmPassword}
-        onChangeText={validateConfirmPassword}
+        onChangeText={handleConfirmPasswordChange}
       />
-      {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+      {confirmPasswordError ? <Text style={{ color: "red", fontSize: 14 }}>{confirmPasswordError}</Text> : null}
 
-      <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up</Text>
+      {/* Sign Up 按钮 */}
+      <TouchableOpacity
+        style={{
+          backgroundColor: "#1E567D",
+          height: 54,
+          width: "100%",  // 按钮占满整个宽度
+          borderRadius: 14,
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: 24,
+        }}
+        onPress={handleSignUp}
+      >
+        <Text style={{ color: "#fff", fontSize: 20, fontWeight: "600" }}>
+          Sign Up
+        </Text>
       </TouchableOpacity>
+
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 20,
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  signUpButton: {
-    backgroundColor: "#278EA0",
-    borderRadius: 8,
-    paddingVertical: 12,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-});
 
 export default SignUpPage;
