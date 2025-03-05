@@ -1,85 +1,77 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
-import { Menu, IconButton, Provider } from "react-native-paper";
+import Icon from "react-native-vector-icons/Ionicons";
+import { useRouter } from 'expo-router';  // 使用 Next.js 的 router
 
-const HomePage: React.FC = () => {
-  const router = useRouter();
+const HomePage = () => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const router = useRouter();  // 使用 router 来进行页面跳转
+  const username = "John Doe"; // 假设从登录后的用户信息中获取
 
   const handleSignOut = () => {
-    // 清理用户的登录信息，退出登录
-    Alert.alert("Logged out", "You have successfully logged out.");
-    router.replace('/'); // 返回到开始页面
-  };
-
-  const handleNavigateToTraining = () => {
-    router.push("/training"); // 跳转到训练页面
-  };
-
-  const handleNavigateToProfile = () => {
-    router.push("/profile"); // 跳转到个人资料页面
-  };
-
-  const handleNavigateToSettings = () => {
-    router.push("/settings"); // 跳转到设置页面
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Sign Out", onPress: () => console.log("Signed out") },
+    ]);
   };
 
   return (
-    <Provider>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Welcome to VitalGaze</Text>
-          <Menu
-            visible={menuVisible}
-            onDismiss={() => setMenuVisible(false)}
-            anchor={
-              <IconButton
-                icon="menu"
-                size={30}
-                onPress={() => setMenuVisible(true)}
-              />
-            }
-          >
-            <Menu.Item onPress={handleNavigateToSettings} title="Settings" />
-            <Menu.Item onPress={handleNavigateToProfile} title="Profile" />
-            <Menu.Item onPress={handleSignOut} title="Sign Out" />
-          </Menu>
-        </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      {/* 汉堡菜单按钮 */}
+      <TouchableOpacity onPress={() => setMenuVisible(!menuVisible)} style={styles.menuButton}>
+        <Icon name="menu" size={30} color="#1E567D" />
+      </TouchableOpacity>
 
-        <Text style={styles.subtitle}>Track your eye health and progress</Text>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Your Progress</Text>
-          <Text style={styles.cardContent}>Eye relaxation exercises completed: 20</Text>
-          <Text style={styles.cardContent}>Last training session: 10 mins ago</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Upcoming Sessions</Text>
-          <Text style={styles.cardContent}>Next session: 3 PM</Text>
-          <Text style={styles.cardContent}>Duration: 15 mins</Text>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleNavigateToTraining}>
-            <Text style={styles.buttonText}>Start Training</Text>
+      {/* 菜单 */}
+      {menuVisible && (
+        <View style={styles.menu}>
+          <TouchableOpacity onPress={() => router.push("/settings")}>
+            <Text style={styles.menuItem}>Settings</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleNavigateToProfile}>
-            <Text style={styles.buttonText}>Go to Profile</Text>
+          <TouchableOpacity onPress={() => router.push("/profile")}>
+            <Text style={styles.menuItem}>Profile</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleNavigateToSettings}>
-            <Text style={styles.buttonText}>Settings</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button} onPress={handleSignOut}>
-            <Text style={styles.buttonText}>Sign Out</Text>
+          <TouchableOpacity onPress={handleSignOut}>
+            <Text style={styles.menuItem}>Sign Out</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
-    </Provider>
+      )}
+
+      {/* 欢迎标语 */}
+      <Text style={styles.welcomeText}>Welcome to VitalGaze</Text>
+
+      {/* 个性化问候文本，放置在中间 */}
+      <Text style={styles.personalizedGreeting}>Hello, {username}!</Text>
+
+      {/* 副标题 */}
+      <Text style={styles.subtitle}>Track your eye health and progress</Text>
+
+      {/* 信息卡片 */}
+      <View style={styles.card}>
+        <Text>Your Progress</Text>
+        <Text>Eye relaxation exercises completed: 20</Text>
+        <Text>Last training session: 10 mins ago</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text>Upcoming Sessions</Text>
+        <Text>Next session: 3 PM</Text>
+        <Text>Duration: 15 mins</Text>
+      </View>
+
+      {/* 按钮区域 */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/training")}>
+          <Text style={styles.buttonText}>Start Training</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/profile")}>
+          <Text style={styles.buttonText}>Go to Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/settings")}>
+          <Text style={styles.buttonText}>Settings</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -87,69 +79,80 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f9f9f9",
     padding: 20,
   },
-  header: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
+  menuButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    zIndex: 10,  // 保证按钮在最上层
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "900",
+  menu: {
+    position: "absolute",
+    top: 60,
+    right: 10,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    padding: 10,
+    zIndex: 20,  // 设置更高的 zIndex 确保菜单框在最上层
+  },
+  menuItem: {
+    padding: 15,
+    fontSize: 18,  // 增大字体大小
     color: "#1E567D",
+  },
+  welcomeText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#1E567D",
+    marginTop: 80,
+    textAlign: 'center',  // 居中对齐
+  },
+  personalizedGreeting: {
+    fontSize: 25,
+    color: "#666",
+    fontStyle: "italic",
+    marginTop: 20,
+    textAlign: 'center',  // 居中对齐
   },
   subtitle: {
     fontSize: 18,
-    color: "#666",
-    marginBottom: 40,
+    color: "#888",
+    marginTop: 30,
+    textAlign: "center",
   },
   card: {
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     padding: 20,
-    marginBottom: 20,
-    borderRadius: 10,
+    marginTop: 20,
     width: "100%",
-    maxWidth: 420,
+    borderRadius: 8,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  cardTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#333",
-    marginBottom: 10,
-  },
-  cardContent: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
   },
   buttonContainer: {
     marginTop: 40,
     width: "100%",
-    maxWidth: 420,
+    alignItems: "center",
   },
   button: {
     backgroundColor: "#1E567D",
-    borderRadius: 14,
-    paddingVertical: 18,
-    marginBottom: 15,
-    width: "100%",
+    padding: 15,
+    marginVertical: 10,
+    width: "80%",
+    borderRadius: 8,
     alignItems: "center",
   },
   buttonText: {
     color: "#fff",
     fontSize: 22,
-    fontWeight: "800",
-    textTransform: "uppercase",
+    fontWeight: "bold",
   },
 });
 
