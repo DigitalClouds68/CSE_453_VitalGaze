@@ -1,3 +1,9 @@
+/* 
+
+This file is just used to connect to a bluetooth device and send data to it.
+
+*/
+
 // reference from stackoverflow...
 const bluetooth = require('node-bluetooth');
 
