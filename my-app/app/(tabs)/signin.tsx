@@ -58,7 +58,7 @@ const SignInPage: React.FC = () => {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
       {/* 返回按钮 */}
-      <TouchableOpacity onPress={() => router.back()} style={{ position: "absolute", top: 40, left: 20 }}>
+      <TouchableOpacity onPress={() => router.replace('/')} style={{ position: "absolute", top: 40, left: 20 }}>
         <Ionicons name="arrow-back" size={30} color="#1E567D" />
         </TouchableOpacity>
       {/* 页面顶部 logo 和设备名称 */}

@@ -1,111 +1,156 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
-import { useRouter } from 'expo-router';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import { Menu, IconButton, Provider } from "react-native-paper";
 
-const DashboardPage: React.FC = () => {
+const HomePage: React.FC = () => {
   const router = useRouter();
+  const [menuVisible, setMenuVisible] = useState(false);
 
-  // Function to handle navigation on button press
-  const navigateTo = (page: string) => {
-    if (page === 'training') {
-      router.push('/(tabs)/training');
-    } else if (page === 'eye_tracking') {
-      router.push('/(tabs)/eye_tracking');
-    } else if (page === 'progress') {
-      router.push('/(tabs)/progress');
-    }
+  const handleSignOut = () => {
+    // 清理用户的登录信息，退出登录
+    Alert.alert("Logged out", "You have successfully logged out.");
+    router.replace('/'); // 返回到开始页面
   };
 
-  // Navigate to Settings page
-  const goToSettings = () => {
-    router.push('/(tabs)/settings'); // Adjust the path based on your file structure
+  const handleNavigateToTraining = () => {
+    router.push("/training"); // 跳转到训练页面
+  };
+
+  const handleNavigateToProfile = () => {
+    router.push("/profile"); // 跳转到个人资料页面
+  };
+
+  const handleNavigateToSettings = () => {
+    router.push("/settings"); // 跳转到设置页面
   };
 
   return (
-    <View style={styles.container}>
-      {/* Background Gradient */}
-      <Svg height="100%" width="100%" style={styles.gradient}>
-        <Defs>
-          <LinearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="#278EA0" stopOpacity="1" />
-            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="2" />
-          </LinearGradient>
-        </Defs>
-        <Rect x="0" y="0" width="100%" height="100%" fill="url(#gradient1)" />
-      </Svg>
+    <Provider>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Welcome to VitalGaze</Text>
+          <Menu
+            visible={menuVisible}
+            onDismiss={() => setMenuVisible(false)}
+            anchor={
+              <IconButton
+                icon="menu"
+                size={30}
+                onPress={() => setMenuVisible(true)}
+              />
+            }
+          >
+            <Menu.Item onPress={handleNavigateToSettings} title="Settings" />
+            <Menu.Item onPress={handleNavigateToProfile} title="Profile" />
+            <Menu.Item onPress={handleSignOut} title="Sign Out" />
+          </Menu>
+        </View>
 
-      <Text style={styles.header}>Welcome Back</Text>
+        <Text style={styles.subtitle}>Track your eye health and progress</Text>
 
-      {/* Settings Icon in top-right corner */}
-      <TouchableOpacity style={styles.settingsIcon} onPress={goToSettings}>
-        <Ionicons name="settings-outline" size={30} color="#000" />
-      </TouchableOpacity>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Your Progress</Text>
+          <Text style={styles.cardContent}>Eye relaxation exercises completed: 20</Text>
+          <Text style={styles.cardContent}>Last training session: 10 mins ago</Text>
+        </View>
 
-      {/* Buttons for navigation */}
-      <View style={styles.textFieldContainer}>
-        <TouchableOpacity style={styles.textField} onPress={() => navigateTo('training')}>
-          <Text style={styles.text}>Start Training</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.textField} onPress={() => navigateTo('eye_tracking')}>
-          <Text style={styles.text}>Start Eye Tracking</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.textField} onPress={() => navigateTo('progress')}>
-          <Text style={styles.text}>Check Progress</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Upcoming Sessions</Text>
+          <Text style={styles.cardContent}>Next session: 3 PM</Text>
+          <Text style={styles.cardContent}>Duration: 15 mins</Text>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleNavigateToTraining}>
+            <Text style={styles.buttonText}>Start Training</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={handleNavigateToProfile}>
+            <Text style={styles.buttonText}>Go to Profile</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={handleNavigateToSettings}>
+            <Text style={styles.buttonText}>Settings</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={handleSignOut}>
+            <Text style={styles.buttonText}>Sign Out</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </Provider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'linear-gradient(180deg, #227788 0%, #FFFFFF 100%)',
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f9f9f9",
+    padding: 20,
   },
   header: {
-    fontSize: 28,
-    fontFamily: 'Crimson Text',
-    fontWeight: '700',
-    color: '#000000',
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
-  gradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
+  title: {
+    fontSize: 32,
+    fontWeight: "900",
+    color: "#1E567D",
   },
-  textFieldContainer: {
-    width: '90%',
+  subtitle: {
+    fontSize: 18,
+    color: "#666",
+    marginBottom: 40,
+  },
+  card: {
+    backgroundColor: "white",
+    padding: 20,
     marginBottom: 20,
+    borderRadius: 10,
+    width: "100%",
+    maxWidth: 420,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  textField: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    marginVertical: 10,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 3,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-    borderRadius: 30,
+  cardTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 10,
   },
-  text: {
-    flex: 1,
-    fontFamily: 'Crimson Text',
-    fontWeight: '700',
-    fontSize: 19,
-    color: '#000000',
-    textAlign: 'center',
+  cardContent: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 5,
   },
-  settingsIcon: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
+  buttonContainer: {
+    marginTop: 40,
+    width: "100%",
+    maxWidth: 420,
+  },
+  button: {
+    backgroundColor: "#1E567D",
+    borderRadius: 14,
+    paddingVertical: 18,
+    marginBottom: 15,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "800",
+    textTransform: "uppercase",
   },
 });
 
-export default DashboardPage;
+export default HomePage;
