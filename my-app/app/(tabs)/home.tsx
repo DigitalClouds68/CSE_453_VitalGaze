@@ -64,12 +64,6 @@ const HomePage = () => {
         <TouchableOpacity style={styles.button} onPress={() => router.push("/training")}>
           <Text style={styles.buttonText}>Start Training</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/profile")}>
-          <Text style={styles.buttonText}>Go to Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/settings")}>
-          <Text style={styles.buttonText}>Settings</Text>
-        </TouchableOpacity>
       </View>
     </ScrollView>
   );

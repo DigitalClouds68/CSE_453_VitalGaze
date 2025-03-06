@@ -1,135 +1,197 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
-import React from 'react';
-import { useRouter } from 'expo-router'; 
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { Entypo, MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { Ionicons } from "@expo/vector-icons"; 
 
-const SettingsPage: React.FC = () => {
+const SettingsPage = () => {
   const router = useRouter();
+  const [deviceConnected, setDeviceConnected] = useState(false);
+  const [connectedDevice, setConnectedDevice] = useState('');
+  const [availableDevices, setAvailableDevices] = useState<string[]>([]);
+  const [searching, setSearching] = useState(false);
 
-  const handleBack = () => {
-    router.push('/(tabs)/home'); // Go back to the home page
+  // 模拟搜索设备
+  const searchDevices = () => {
+    setSearching(true);
+    setTimeout(() => {
+      setAvailableDevices(['VitalGaze 101', 'VitalGaze 202', 'VitalGaze 303']);
+      setSearching(false);
+    }, 2000);
+  };
+
+  // 连接设备
+  const connectToDevice = (deviceName: string) => {
+    setDeviceConnected(true);
+    setConnectedDevice(deviceName);
+    setAvailableDevices([]); // 清空搜索列表
+  };
+
+  // 断开连接 - 需要确认
+  const disconnectDevice = () => {
+    Alert.alert(
+      "Disconnect Device",
+      `Are you sure you want to disconnect ${connectedDevice}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Disconnect", onPress: () => {
+            setDeviceConnected(false);
+            setConnectedDevice('');
+          }
+        }
+      ]
+    );
   };
 
   return (
-    <View style={styles.container}>
-      <Svg height="100%" width="100%" style={styles.gradient}>
-        <Defs>
-          <LinearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="#278EA0" stopOpacity="1" />
-            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="2" />
-          </LinearGradient>
-        </Defs>
-        <Rect x="0" y="0" width="100%" height="100%" fill="url(#gradient1)" />
-      </Svg>
-
-      {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-        <Text style={styles.arrow}>←</Text>
+    <ScrollView style={styles.container}>
+      {/* 顶部返回按钮 */}
+      <TouchableOpacity onPress={() => router.push('/home')} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={30} color="#1E567D" />
       </TouchableOpacity>
 
-      {/* Settings Icon */}
-      <TouchableOpacity style={styles.settingsIcon}>
-        <Ionicons name="settings-outline" size={50} color="#000" />
-      </TouchableOpacity>
-
-      {/* Settings Options */}
-      <View style={styles.settingsList}>
-        <View style={styles.settingItem}>
-          <Text style={styles.settingText}>VR Device Connection</Text>
-          <TouchableOpacity style={styles.settingButton}>
-            <Text style={styles.buttonText}>Connect</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.settingItem}>
-          <Text style={styles.settingText}>Exercise Reminders</Text>
-          <TouchableOpacity style={styles.settingButton}>
-            <Text style={styles.buttonText}>Configure</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.settingItem}>
-          <Text style={styles.settingText}>Calibration</Text>
-          <TouchableOpacity style={styles.settingButton}>
-            <Text style={styles.buttonText}>Start</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.settingItem}>
-          <Text style={styles.settingText}>Data Privacy</Text>
-          <TouchableOpacity style={styles.settingButton}>
-            <Text style={styles.buttonText}>Manage</Text>
-          </TouchableOpacity>
-        </View>
+      {/* 设置图标 */}
+      <View style={styles.headerContainer}>
+        <Image source={require('./image.png')} style={styles.headerIcon} />
       </View>
-    </View>
+
+      {/* 已连接设备显示 */}
+      <View style={styles.deviceStatusContainer}>
+        {deviceConnected ? (
+          <View style={styles.connectedBox}>
+            <MaterialIcons name="bluetooth-connected" size={24} color="#4CAF50" />
+            <Text style={styles.connectedText}>Connected to {connectedDevice}</Text>
+            <TouchableOpacity style={styles.disconnectButton} onPress={disconnectDevice}>
+              <Text style={styles.disconnectText}>Disconnect</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <Text style={styles.noDeviceText}>No Device Connected</Text>
+        )}
+      </View>
+
+      {/* 搜索设备按钮 */}
+      {!deviceConnected && (
+        <TouchableOpacity style={styles.searchButton} onPress={searchDevices} disabled={searching}>
+          {searching ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Text style={styles.searchButtonText}>Search Devices</Text>
+          )}
+        </TouchableOpacity>
+      )}
+
+      {/* 可连接设备列表 */}
+      {availableDevices.length > 0 && (
+        <View style={styles.deviceListContainer}>
+          <Text style={styles.deviceListLabel}>Available Devices</Text>
+          {availableDevices.map((device, index) => (
+            <TouchableOpacity key={index} style={styles.deviceItem} onPress={() => connectToDevice(device)}>
+              <MaterialIcons name="bluetooth-searching" size={20} color="#007AFF" />
+              <Text style={styles.deviceName}>{device}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+    </ScrollView>
   );
 };
 
+// **样式优化**
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'linear-gradient(180deg, #227788 0%, #FFFFFF 100%)',
-  },
-  gradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
+    padding: 20,
+    backgroundColor: '#F9F9F9',
   },
   backButton: {
     position: 'absolute',
-    left: 10,
-    top: 40,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 30,
+    top: 20,
+    left: 20,
+    zIndex: 1,
   },
-  arrow: {
-    fontSize: 30,
-    color: '#FFFFFF',
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 40,
   },
-  settingsIcon: {
-    position: 'absolute',
-    top: 80,
-    left: '50%',
-    transform: [{ translateX: -15 }],
+  headerIcon: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
   },
-  settingsList: {
-    marginTop: 20,
-    width: '90%',
+  deviceStatusContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  settingItem: {
+  connectedBox: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 30,
+    backgroundColor: '#E8F5E9',
     padding: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 10,
+    width: '100%',
+    justifyContent: 'space-between',
   },
-  settingText: {
-    fontFamily: 'Crimson Text',
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  settingButton: {
-    minWidth: 100, // Ensure buttons have the same minimum width
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#278EA0',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontFamily: 'Crimson Text',
+  connectedText: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    textAlign: 'center',
+    color: '#2E7D32',
+  },
+  disconnectButton: {
+    backgroundColor: '#D32F2F',
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  disconnectText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  noDeviceText: {
+    fontSize: 16,
+    color: '#757575',
+  },
+  searchButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  searchButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  deviceListContainer: {
+    marginTop: 10,
+    padding: 15,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  deviceListLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  deviceItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#E3F2FD',
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  deviceName: {
+    fontSize: 16,
+    color: '#0277BD',
+    marginLeft: 10,
   },
 });
 
