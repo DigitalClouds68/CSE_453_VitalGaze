@@ -1,144 +1,232 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { useRouter } from 'expo-router';  // 用于页面导航
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, SafeAreaView, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
+import { useRouter } from 'expo-router'; // Import useRouter
 
-const TrainingPage = () => {
-  const [isTraining, setIsTraining] = useState(false); // 是否正在进行训练
-  const [timeLeft, setTimeLeft] = useState(60);  // 训练剩余时间
-  const [totalSessions, setTotalSessions] = useState(0); // 记录训练总次数
-  const [completedSessions, setCompletedSessions] = useState(0); // 记录完成的训练次数
-  const [feedbackMessage, setFeedbackMessage] = useState(""); // 训练反馈消息
-  const router = useRouter();  // 用于导航到其他页面
-
-  // 模拟的眼部运动跟踪反馈
-  const trackEyeMovement = () => {
-    // 假设我们通过某种方式跟踪眼部运动，并提供反馈
-    setFeedbackMessage("Focus on the center of the screen.");
-  };
-
-  // 训练开始或暂停
-  const handleStartPause = () => {
-    setIsTraining(!isTraining);
-  };
-
-  // 计时器更新训练进度
-  useEffect(() => {
-    let timer: NodeJS.Timeout | undefined;
-    if (isTraining && timeLeft > 0) {
-      timer = setInterval(() => {
-        setTimeLeft(prevTime => prevTime - 1);
-        trackEyeMovement(); // 在训练期间模拟眼部运动跟踪
-      }, 1000);
-    } else if (timeLeft <= 0) {
-      clearInterval(timer);
-      Alert.alert("Training Complete", "Well done! You have completed the session.");
+const TrainingScreen: React.FC = () => {
+  const router = useRouter();
+  
+  // State variables
+  const [score, setScore] = useState<number>(0);
+  const [mode, setMode] = useState<string>('');
+  const [isTraining, setIsTraining] = useState<boolean>(false);
+  const [history, setHistory] = useState<any[]>([]); // Store session history
+  
+  // Simulate training process
+  const handleStartTraining = (selectedMode: string) => {
+    setMode(selectedMode);
+    setScore(0);
+    setIsTraining(true); // Start training
+    setTimeout(() => {
+      const newScore = Math.floor(Math.random() * 100);
+      setScore(newScore);
       setIsTraining(false);
-      setCompletedSessions(prev => prev + 1); // 增加完成的训练次数
-      setTotalSessions(prev => prev + 1); // 增加总训练次数
-    }
-    return () => {
-      if (timer) clearInterval(timer); // 清除定时器
-    };
-  }, [isTraining, timeLeft]);
+      const newHistory = [...history, { mode: selectedMode, score: newScore }];
+      setHistory(newHistory);
+    }, 2000); // Simulate a delay for training process
+  };
 
-  const handleBack = () => {
-    router.push("/home");  // 返回主页
+  // Function to determine feedback color
+  const getFeedbackColor = (score: number) => {
+    if (score >= 80) return 'green';
+    if (score >= 50) return 'yellow';
+    return 'red';
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Eye Relaxation Training</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Back button */}
+        <TouchableOpacity onPress={() => router.push('/home')} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={30} color="#1E567D" />
+        </TouchableOpacity>
 
-      {/* 训练进度 */}
-      <Text style={styles.timerText}>Time Left: {timeLeft} seconds</Text>
+        <Text style={styles.title}>Eye Training</Text>
+        <Text style={styles.subtitle}>Choose Training Mode:</Text>
 
-      {/* 训练控制按钮 */}
-      <TouchableOpacity onPress={handleStartPause} style={styles.button}>
-        <Text style={styles.buttonText}>{isTraining ? "Pause" : "Start"}</Text>
-      </TouchableOpacity>
+        {/* Training Mode Selection Cards */}
+        <View style={styles.cardContainer}>
+          {['Fixation Training', 'Saccadic Training', 'Pursuit Training'].map((modeName) => (
+            <TouchableOpacity
+              key={modeName}
+              style={[styles.card, mode === modeName && styles.selectedCard]}
+              onPress={() => handleStartTraining(modeName)}>
+              <Ionicons name="eye" size={40} color="#1E567D" style={styles.icon} />
+              <Text style={styles.cardText}>{modeName}</Text>
+              <Text style={styles.cardDescription}>Description for {modeName} mode.</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      {/* 返回按钮 */}
-      <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>Back to Home</Text>
-      </TouchableOpacity>
+        {/* Training Feedback */}
+        {mode && !isTraining && (
+          <View style={styles.feedbackContainer}>
+            <Text style={styles.modeText}>Current Mode: {mode}</Text>
+            <Text style={[styles.scoreText, { color: getFeedbackColor(score) }]}>Score: {score}%</Text>
+            <Text style={styles.feedbackMessage}>
+              {score >= 80 ? 'Great job!' : score >= 50 ? 'Keep practicing!' : 'Needs improvement.'}
+            </Text>
+          </View>
+        )}
 
-      {/* 训练反馈 */}
-      {isTraining && (
-        <Text style={styles.feedbackText}>{feedbackMessage}</Text>
-      )}
+        {/* Loading Indicator */}
+        {isTraining && (
+          <ActivityIndicator size="large" color="#1E567D" style={styles.activityIndicator} />
+        )}
 
-      {/* 训练完成数据反馈 */}
-      <View style={styles.dataContainer}>
-        <Text style={styles.dataText}>Total Training Sessions: {totalSessions}</Text>
-        <Text style={styles.dataText}>Completed Sessions: {completedSessions}</Text>
-      </View>
-    </View>
+        {/* Training History */}
+        {history.length > 0 && (
+          <View style={styles.historyContainer}>
+            <Text style={styles.historyTitle}>Training History:</Text>
+            {history.map((item, index) => (
+              <View key={index} style={styles.historyItem}>
+                <Text style={styles.historyText}>Mode: {item.mode}</Text>
+                <Text style={styles.historyText}>Score: {item.score}%</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Restart Button */}
+        <TouchableOpacity style={styles.restartButton} onPress={() => handleStartTraining(mode)}>
+          <Text style={styles.restartButtonText}>Restart</Text>
+        </TouchableOpacity>
+
+        {/* Help Icon */}
+        <TouchableOpacity style={styles.helpButton}>
+          <Ionicons name="help-circle" size={30} color="#1E567D" />
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#F1F8FF', // Light background color
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
-  header: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#1E567D",
-    marginBottom: 20,
-  },
-  timerText: {
-    fontSize: 24,
-    color: "#333",
-    marginBottom: 40,
-  },
-  button: {
-    backgroundColor: "#1E567D",
-    padding: 15,
-    width: "80%",
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "bold",
-  },
   backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1E567D',
+    marginTop: 100,
+  },
+  subtitle: {
+    fontSize: 18,
     marginTop: 20,
-    backgroundColor: "#FF6F61", // 使用鲜艳的背景颜色
+    marginBottom: 10,
+    color: '#1E567D',
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 20,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
     padding: 15,
-    width: "80%",
-    borderRadius: 8,
-    alignItems: "center",
+    width: 100,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
+    margin: 10,
   },
-  backButtonText: {
-    color: "#fff",  // 设置字体颜色为白色，确保可见
-    fontSize: 22,
-    fontWeight: "bold",
+  selectedCard: {
+    backgroundColor: '#4A90E2',
   },
-  feedbackText: {
+  icon: {
+    marginBottom: 10,
+  },
+  cardText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1E567D',
+  },
+  cardDescription: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#1E567D',
+  },
+  feedbackContainer: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  modeText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1E567D',
+  },
+  scoreText: {
     fontSize: 18,
-    color: "#666",
+    marginTop: 10,
+  },
+  feedbackMessage: {
+    fontSize: 16,
+    marginTop: 10,
+    color: '#1E567D',
+  },
+  activityIndicator: {
     marginTop: 20,
-    fontStyle: "italic",
   },
-  dataContainer: {
-    marginTop: 40,
+  historyContainer: {
+    marginTop: 30,
+    width: '100%',
     padding: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
-    width: "80%",
-    alignItems: "center",
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  dataText: {
+  historyTitle: {
     fontSize: 18,
-    color: "#333",
-    marginVertical: 5,
+    fontWeight: 'bold',
+    color: '#1E567D',
+  },
+  historyItem: {
+    marginTop: 10,
+  },
+  historyText: {
+    fontSize: 16,
+    color: '#1E567D',
+  },
+  restartButton: {
+    backgroundColor: '#4A90E2',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  restartButtonText: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  helpButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    padding: 10,
   },
 });
 
-export default TrainingPage;
+export default TrainingScreen;
