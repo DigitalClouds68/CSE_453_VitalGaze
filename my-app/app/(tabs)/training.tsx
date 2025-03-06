@@ -1,101 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Button, SafeAreaView, ActivityIndicator } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
-import { useRouter } from 'expo-router'; // Import useRouter
+import React, { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-const TrainingScreen: React.FC = () => {
-  const router = useRouter();
-  
-  // State variables
+// Dummy functions for training modes
+const startTraining = (mode: string) => {
+  console.log(`Training started for mode: ${mode}`);
+};
+
+const TrainingScreen = () => {
+  const [currentMode, setCurrentMode] = useState<string>('');
   const [score, setScore] = useState<number>(0);
-  const [mode, setMode] = useState<string>('');
-  const [isTraining, setIsTraining] = useState<boolean>(false);
-  const [history, setHistory] = useState<any[]>([]); // Store session history
-  
-  // Simulate training process
-  const handleStartTraining = (selectedMode: string) => {
-    setMode(selectedMode);
-    setScore(0);
-    setIsTraining(true); // Start training
-    setTimeout(() => {
-      const newScore = Math.floor(Math.random() * 100);
-      setScore(newScore);
-      setIsTraining(false);
-      const newHistory = [...history, { mode: selectedMode, score: newScore }];
-      setHistory(newHistory);
-    }, 2000); // Simulate a delay for training process
-  };
+  const router = useRouter();
 
-  // Function to determine feedback color
-  const getFeedbackColor = (score: number) => {
-    if (score >= 80) return 'green';
-    if (score >= 50) return 'yellow';
-    return 'red';
+  // Handle selecting a training mode
+  const handleModeSelect = (mode: string) => {
+    setScore(0); // Clear previous score
+    setCurrentMode(''); // Clear previous mode
+
+    setTimeout(() => {
+      setCurrentMode(mode); // Set new mode after delay
+      startTraining(mode); // Start training with the new mode
+    }, 500); // Small delay for visual transition
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Back button */}
-        <TouchableOpacity onPress={() => router.push('/home')} style={styles.backButton}>
+        {/* Back Button */}
+        <TouchableOpacity onPress={() => router.push("/home")} style={styles.backButton}>
           <Ionicons name="arrow-back" size={30} color="#1E567D" />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Eye Training</Text>
-        <Text style={styles.subtitle}>Choose Training Mode:</Text>
-
-        {/* Training Mode Selection Cards */}
-        <View style={styles.cardContainer}>
-          {['Fixation Training', 'Saccadic Training', 'Pursuit Training'].map((modeName) => (
-            <TouchableOpacity
-              key={modeName}
-              style={[styles.card, mode === modeName && styles.selectedCard]}
-              onPress={() => handleStartTraining(modeName)}>
-              <Ionicons name="eye" size={40} color="#1E567D" style={styles.icon} />
-              <Text style={styles.cardText}>{modeName}</Text>
-              <Text style={styles.cardDescription}>Description for {modeName} mode.</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Training Feedback */}
-        {mode && !isTraining && (
-          <View style={styles.feedbackContainer}>
-            <Text style={styles.modeText}>Current Mode: {mode}</Text>
-            <Text style={[styles.scoreText, { color: getFeedbackColor(score) }]}>Score: {score}%</Text>
-            <Text style={styles.feedbackMessage}>
-              {score >= 80 ? 'Great job!' : score >= 50 ? 'Keep practicing!' : 'Needs improvement.'}
+        {/* Mode Selection */}
+        <View style={styles.modeSelectionContainer}>
+          <Text style={styles.header}>Choose Your Training Mode</Text>
+          
+          {/* Fixation Training Card */}
+          <TouchableOpacity 
+            style={styles.card} 
+            onPress={() => handleModeSelect('Fixation Training')}
+          >
+            <Text style={styles.cardTitle}>Fixation Training</Text>
+            <Text style={styles.cardDescription} numberOfLines={3}>
+              Train your eyes to maintain focus on a fixed point, improving stability and reducing eye strain.
             </Text>
-          </View>
-        )}
+          </TouchableOpacity>
 
-        {/* Loading Indicator */}
-        {isTraining && (
-          <ActivityIndicator size="large" color="#1E567D" style={styles.activityIndicator} />
-        )}
+          {/* Saccadic Training Card */}
+          <TouchableOpacity 
+            style={styles.card} 
+            onPress={() => handleModeSelect('Saccadic Training')}
+          >
+            <Text style={styles.cardTitle}>Saccadic Training</Text>
+            <Text style={styles.cardDescription} numberOfLines={3}>
+              Exercise rapid eye movements between targets to improve reading speed and visual processing.
+            </Text>
+          </TouchableOpacity>
 
-        {/* Training History */}
-        {history.length > 0 && (
-          <View style={styles.historyContainer}>
-            <Text style={styles.historyTitle}>Training History:</Text>
-            {history.map((item, index) => (
-              <View key={index} style={styles.historyItem}>
-                <Text style={styles.historyText}>Mode: {item.mode}</Text>
-                <Text style={styles.historyText}>Score: {item.score}%</Text>
-              </View>
-            ))}
-          </View>
-        )}
+          {/* Pursuit Training Card */}
+          <TouchableOpacity 
+            style={styles.card} 
+            onPress={() => handleModeSelect('Pursuit Training')}
+          >
+            <Text style={styles.cardTitle}>Pursuit Training</Text>
+            <Text style={styles.cardDescription} numberOfLines={3}>
+              Practice smoothly following moving objects to enhance coordination and tracking ability.
+            </Text>
+          </TouchableOpacity>
 
-        {/* Restart Button */}
-        <TouchableOpacity style={styles.restartButton} onPress={() => handleStartTraining(mode)}>
-          <Text style={styles.restartButtonText}>Restart</Text>
-        </TouchableOpacity>
+          {/* Display Score */}
+          {currentMode && (
+            <View style={styles.scoreContainer}>
+              <Text style={styles.scoreText}>Current Score: {score}</Text>
+            </View>
+          )}
 
-        {/* Help Icon */}
-        <TouchableOpacity style={styles.helpButton}>
-          <Ionicons name="help-circle" size={30} color="#1E567D" />
-        </TouchableOpacity>
+          {/* No training history message */}
+          {currentMode === '' && <Text style={styles.historyMessage}>No training history yet.</Text>}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -104,128 +87,65 @@ const TrainingScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F8FF', // Light background color
+    paddingTop: 20,
+    paddingHorizontal: 10,
+    backgroundColor: '#f1f8ff',
   },
   scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    paddingBottom: 20,
   },
   backButton: {
     position: 'absolute',
-    top: 40,
-    left: 20,
+    top: 10,
+    left: 10,
     zIndex: 1,
   },
-  title: {
+  modeSelectionContainer: {
+    marginTop: 50,
+    alignItems: 'center',
+  },
+  header: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
     color: '#1E567D',
-    marginTop: 100,
-  },
-  subtitle: {
-    fontSize: 18,
-    marginTop: 20,
-    marginBottom: 10,
-    color: '#1E567D',
-  },
-  cardContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 20,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
+    width: '90%',
+    padding: 20,
+    marginVertical: 10,
     borderRadius: 10,
-    padding: 15,
-    width: 100,
-    alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3,
-    margin: 10,
+    elevation: 5,
   },
-  selectedCard: {
-    backgroundColor: '#4A90E2',
-  },
-  icon: {
-    marginBottom: 10,
-  },
-  cardText: {
-    fontSize: 16,
+  cardTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#1E567D',
   },
   cardDescription: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#1E567D',
+    fontSize: 14,
+    color: '#555',
+    marginTop: 10,
+    lineHeight: 20,
   },
-  feedbackContainer: {
-    marginTop: 30,
-    alignItems: 'center',
-  },
-  modeText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1E567D',
+  scoreContainer: {
+    marginTop: 20,
   },
   scoreText: {
     fontSize: 18,
-    marginTop: 10,
-  },
-  feedbackMessage: {
-    fontSize: 16,
-    marginTop: 10,
-    color: '#1E567D',
-  },
-  activityIndicator: {
-    marginTop: 20,
-  },
-  historyContainer: {
-    marginTop: 30,
-    width: '100%',
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  historyTitle: {
-    fontSize: 18,
     fontWeight: 'bold',
-    color: '#1E567D',
+    color: '#28a745', // Green color for positive feedback
   },
-  historyItem: {
-    marginTop: 10,
-  },
-  historyText: {
-    fontSize: 16,
-    color: '#1E567D',
-  },
-  restartButton: {
-    backgroundColor: '#4A90E2',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+  historyMessage: {
     marginTop: 20,
-  },
-  restartButtonText: {
     fontSize: 16,
-    color: '#fff',
-  },
-  helpButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    padding: 10,
+    fontStyle: 'italic',
+    color: '#888',
   },
 });
 
