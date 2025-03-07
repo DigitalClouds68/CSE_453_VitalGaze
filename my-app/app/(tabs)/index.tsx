@@ -9,12 +9,10 @@ const StartPage: React.FC = () => {
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
       {/* Logo and Device Name Section */}
       <View style={{ alignItems: 'center', marginBottom: 40 }}>
-        {/* Logo */}
         <Image
-          source={require('./image.png')} // 确保logo.png文件放在正确的路径
-          style={{ width: 120, height: 120, marginBottom: 20 }} // logo大小
+          source={require('./image.png')} // 确保图片路径正确
+          style={{ width: 120, height: 120, marginBottom: 20 }}
         />
-        {/* 设备名字和标语 */}
         <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1E567D' }}>VitalGaze</Text>
         <Text style={{ fontSize: 18, color: '#666' }}>Eye Care Made Easy</Text>
       </View>
@@ -45,12 +43,28 @@ const StartPage: React.FC = () => {
           borderRadius: 14,
           justifyContent: 'center',
           alignItems: 'center',
+          marginBottom: 18,
         }}
         onPress={() => router.push('/signin')}
       >
         <Text style={{ color: '#1E567D', fontSize: 20, fontWeight: '600' }}>
           Already have an account
         </Text>
+      </TouchableOpacity>
+
+      {/* Play Unity Game Button */}
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#FF5733',
+          width: '100%',
+          height: 54,
+          borderRadius: 14,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onPress={() => router.push('/UnityWebGL')}
+      >
+        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '600' }}>Play Game</Text>
       </TouchableOpacity>
     </View>
   );
