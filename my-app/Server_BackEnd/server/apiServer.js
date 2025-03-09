@@ -5,19 +5,25 @@ const connectDB = require("./config/db");
 const os = require("os");
 
 const app = express();
-connectDB(); // connect to MongoDB
+connectDB(); // Connect to MongoDB
 
+// Middleware setup
 app.use(cors());
 app.use(express.json());
-app.use(cors());
 
 // Load the API routes
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/user", require("./routes/userRoutes"));  // 用户路由
+app.use("/api/training", require("./routes/trainingRoutes"));  // 训练数据路由
+// Load the API routes
 
-/* ***********************后期补充************************👇*/
-//app.use("/api/sessions", require("./routes/sessionRoutes")); // 训练数据 API
-//app.use("/api/tracking", require("./routes/trackingRoutes")); // 眼动追踪 API
+// Catch-all error handler for uncaught errors
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ success: false, message: "Internal Server Error" });
+});
 
+// Start the server
 const PORT = process.env.API_PORT || 5000;
 
 function getLocalIP() {
@@ -29,7 +35,7 @@ function getLocalIP() {
       }
     }
   }
-  return "localhost"; // Fallback
+  return "localhost"; // Fallback to localhost
 }
 
 const localIP = getLocalIP();
