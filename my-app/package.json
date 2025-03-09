@@ -43,7 +43,8 @@
     "react-native-web": "~0.19.10",
     "react-native-webview": "^13.13.2",
     "react-unity-webgl": "^9.8.0",
-    "schema-utils": "^4.3.0"
+    "schema-utils": "^4.3.0",
+    "expo-screen-orientation": "~8.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
