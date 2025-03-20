@@ -16,6 +16,8 @@ const UserSchema = new mongoose.Schema({
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
+  console.log("DEBUG password:", this.password, this.password.length);
+
   // 密码长度验证
   if (this.password.length < 6 || this.password.length > 20) {
     throw new Error("密码长度必须在 6 到 20 个字符之间");

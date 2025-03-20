@@ -35,6 +35,6 @@ device
                 console.log('received message:', buffer.toString());
             });
 
-            connection.write(new Buffer('Hello!', 'utf-8'));
+            connection.write(Buffer.from('Hello!', 'utf-8'));
         });
     }).inquire();
