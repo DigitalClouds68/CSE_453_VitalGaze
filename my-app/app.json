@@ -34,6 +34,10 @@
     "experiments": {
       "typedRoutes": true
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+
+    "extra": {
+      "API_URL": "http://10.12.70.3:5000"
+    }
   }
 }

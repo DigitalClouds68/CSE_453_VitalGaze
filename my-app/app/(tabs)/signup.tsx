@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Animated, Alert, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // 引入Ionicons图标库
+import Constants from "expo-constants"; // ✅ 获取环境变量
+
+// ✅ 获取 API 服务器 URL
+const API_URL = Constants.expoConfig?.extra?.API_URL || "http://localhost:5000";
+
+console.log("🌍 使用的 API 地址:", API_URL);
 
 const SignUpPage: React.FC = () => {
   const [email, setEmail] = useState<string>(""); // 存储邮箱
@@ -52,7 +58,7 @@ const SignUpPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://192.168.1.217:5000/api/auth/signup", {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, username, password }),

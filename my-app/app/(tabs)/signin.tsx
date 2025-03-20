@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // 引入Ionicons图标库
+import Constants from "expo-constants"; // ✅ 获取环境变量
+
+// ✅ 获取 API 服务器 URL
+const API_URL = Constants.expoConfig?.extra?.API_URL || "http://localhost:5000";
+
+console.log("🌍 使用的 API 地址:", API_URL);
 
 const SignInPage: React.FC = () => {
   const [email, setEmail] = useState(""); // 存储邮箱
@@ -33,14 +39,18 @@ const SignInPage: React.FC = () => {
       return;
     }
 
+    console.log(`🔹 正在请求 API: ${API_URL}/api/auth/signin`);
+    console.log("📩 发送的数据:", { email, password });
+
     try {
-      const response = await fetch("http://192.168.1.217:5000/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }), // 发送邮箱和密码
       });
 
       const data = await response.json(); // 解析返回的数据
+      console.log("📩 API 响应:", data);
 
       if (response.ok) {
         Alert.alert("Success", "Login successful!");
