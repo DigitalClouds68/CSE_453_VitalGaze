@@ -1,12 +1,12 @@
 // routes/authRoutes.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const authController = require('../controllers/authController');
-
-// 登录路由
-router.post('/login', authController.login);
+const authController = require("../controllers/authController");
 
 // 注册路由
-router.post('/register', authController.signup);
+router.post("/signup", authController.signup);
+
+// 登录路由
+router.post("/login", authController.login);
 
 module.exports = router;
