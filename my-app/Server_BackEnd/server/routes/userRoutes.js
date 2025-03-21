@@ -1,13 +1,12 @@
-// routes/userRoutes.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userController = require('../controllers/userController'); // 导入控制器
+const authMiddleware = require("../middleware/authMiddleware");
+const userController = require("../controllers/userController");
 
-// 路由：获取用户信息
-router.get('/profile', userController.getProfile);
 
-// 路由：更新用户信息
-router.put('/profile', userController.updateProfile);
+router.get('/profile', authMiddleware, userController.getProfile);
+router.put("/username", authMiddleware, userController.changeUsername);
+router.put("/password", authMiddleware, userController.changePassword);
+router.put("/email", authMiddleware, userController.changeEmail);
 
-// 导出路由
 module.exports = router;
