@@ -7,21 +7,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-<<<<<<< HEAD
-  username: { type: String, required: true },
-  password: { type: String, required: true }
-}, { timestamps: true });  // 自动添加 createdAt 和 updatedAt
-
-// 在保存前加密密码
-UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  console.log("DEBUG password:", this.password, this.password.length);
-
-  // 密码长度验证
-  if (this.password.length < 6 || this.password.length > 20) {
-    throw new Error("密码长度必须在 6 到 20 个字符之间");
-=======
   username: {
     type: String,
     required: true
@@ -29,7 +14,6 @@ UserSchema.pre("save", async function (next) {
   password: {
     type: String,
     required: true
->>>>>>> d39166b64a84c4b3a5a90b6a556b4edfe16541e8
   }
 });
 
