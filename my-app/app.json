@@ -37,7 +37,7 @@
     "newArchEnabled": true,
 
     "extra": {
-      "API_URL": "http://10.12.70.3:5000"
+      "API_URL": "10.84.95.212:5000"
     }
   }
 }
