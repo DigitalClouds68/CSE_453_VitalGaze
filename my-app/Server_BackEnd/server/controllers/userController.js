@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
-// 更新用户名
 exports.getProfile = async (req, res) => {
   try {
     console.log('获取用户资料 - 用户ID:', req.user.userId); // 打印用户ID
@@ -32,59 +31,55 @@ exports.getProfile = async (req, res) => {
   }
 };
 exports.changeUsername = async (req, res) => {
-  const { newUsername } = req.body;
-
+  const { username } = req.body;
   try {
-    const existingUser = await User.findOne({ username: newUsername });
-    if (existingUser) return res.status(400).json({ error: '用户名已存在' });
-
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      { username: newUsername },
-      { new: true }
-    );
-
-    res.json({ message: '用户名更改成功', newUsername: user.username });
+    const user = await User.findByIdAndUpdate(req.user.userId, { username }, { new: true });
+    if (!user) {
+      return res.status(404).json({ message: "用户不存在" });
+    }
+    res.json({ message: "用户名更新成功", updatedUser: user });
   } catch (error) {
-    res.status(500).json({ error: '服务器错误' });
+    res.status(500).json({ message: "更新用户名失败", error: error.message });
   }
 };
 
 exports.changePassword = async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
-
   try {
-    const user = await User.findById(req.user.userId);
-    if (!user) return res.status(404).json({ error: '用户不存在' });
+    const { oldPassword, newPassword } = req.body;
 
+    // 获取当前用户
+    const user = await User.findById(req.user.userId); 
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // 比对旧密码是否正确
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) return res.status(400).json({ error: '旧密码错误' });
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Incorrect old password' });
+    }
 
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
-    await user.save();
+    // 直接赋值新密码，save() 时会触发 pre-save 钩子加密
+    user.password = newPassword;
+    await user.save(); 
 
-    res.json({ message: '密码更改成功' });
+    res.json({ message: 'Password updated successfully' });
   } catch (error) {
-    res.status(500).json({ error: '服务器错误' });
+    console.error('Error updating password:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
 exports.changeEmail = async (req, res) => {
-  const { newEmail } = req.body;
-
+  const { email } = req.body;
   try {
-    const existingUser = await User.findOne({ email: newEmail });
-    if (existingUser) return res.status(400).json({ error: '邮箱已被使用' });
-
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      { email: newEmail },
-      { new: true }
-    );
-
-    res.json({ message: '邮箱更改成功', newEmail: user.email });
+    const user = await User.findByIdAndUpdate(req.user.userId, { email }, { new: true });
+    if (!user) {
+      return res.status(404).json({ message: "用户不存在" });
+    }
+    res.json({ message: "邮箱更新成功", updatedUser: user });
   } catch (error) {
-    res.status(500).json({ error: '服务器错误' });
+    res.status(500).json({ message: "更新邮箱失败", error: error.message });
   }
 };
