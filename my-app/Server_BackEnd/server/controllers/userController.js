@@ -73,13 +73,20 @@ exports.changePassword = async (req, res) => {
 
 exports.changeEmail = async (req, res) => {
   const { email } = req.body;
+
   try {
-    const user = await User.findByIdAndUpdate(req.user.userId, { email }, { new: true });
+    const user = await User.findById(req.user.userId);
+
     if (!user) {
       return res.status(404).json({ message: "用户不存在" });
     }
+
+    user.email = email;
+    await user.save();  // 使用 save() 方法确保更新
+
     res.json({ message: "邮箱更新成功", updatedUser: user });
   } catch (error) {
+    console.error("更新邮箱失败:", error.message);
     res.status(500).json({ message: "更新邮箱失败", error: error.message });
   }
 };
