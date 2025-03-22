@@ -1,59 +1,43 @@
-// authController.js
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+// controllers/authController.js
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
+// 用户注册
 exports.signup = async (req, res) => {
   try {
     const { email, username, password } = req.body;
-
-    // 检查用户是否已经存在
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: '该邮箱已经注册' });
-    }
-
-    // 密码加密
-    //const hashedPassword = await bcrypt.hash(password, 10);
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // 创建新用户
-    // const user = new User({ email, username, password: hashedPassword });
-    // await user.save();
+    // 创建用户
     const user = new User({ email, username, password });
+    
+    // 保存用户
     await user.save();
-
-    res.status(201).json({
-      message: '用户注册成功',
-      user: { username: user.username, email: user.email },
-    });
+    
+    // 返回成功消息
+    res.status(201).json({ message: "User sign up successfully" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: '注册失败' });
+    res.status(400).json({ error: "Sign up failed" });
   }
 };
 
 exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    
     // 查找用户
     const user = await User.findOne({ email });
+    
+    // 验证用户是否存在，以及密码是否匹配
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: '邮箱或密码错误' });
+      return res.status(401).json({ error: "Email or password error" });
     }
-
-    // 创建 JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
-    });
-
-    res.status(200).json({
-      token,
-      user: { username: user.username, email: user.email },
-    });
+    
+    // 生成 JWT
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    
+    // 返回 token 和用户信息
+    res.json({ token, user });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: '登录失败' });
+    res.status(400).json({ error: "Log in failed" });
   }
 };
