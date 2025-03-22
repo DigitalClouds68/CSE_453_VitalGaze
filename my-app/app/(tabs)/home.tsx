@@ -1,28 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useRouter } from 'expo-router';  // 使用 Next.js 的 router
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomePage = () => {
   const [menuVisible, setMenuVisible] = useState(false);
-  const router = useRouter();  // 使用 router 来进行页面跳转
-  const username = "John Doe"; // 假设从登录后的用户信息中获取
+  const [username, setUsername] = useState("Loading...");  // 默认状态为 "Loading..."
+  const router = useRouter();
+
+  // 获取JWT token并请求用户信息
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");  // 获取存储的token
+        if (token) {
+          const response = await fetch("http://192.168.1.217:5000/api/user/profile", {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          });
+          const data = await response.json();
+          if (data.user && data.user.username) {
+            setUsername(data.user.username);  // 更新用户名
+          } else {
+            setUsername("Error: No username found");
+          }
+        } else {
+          setUsername("Not logged in");  // 如果没有token，设置为未登录
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setUsername("Error fetching username");  // 错误时设置状态
+      }
+    };
+
+    fetchUserData();
+  }, []);  // 空数组作为依赖，只在组件首次渲染时请求数据
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Sign Out", onPress: () => console.log("Signed out") },
+      { text: "Sign Out", onPress: async () => {
+        await AsyncStorage.removeItem("authToken");  // 删除token
+        setUsername("Not logged in");  // 更新用户名为未登录
+      }},
     ]);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* 汉堡菜单按钮 */}
       <TouchableOpacity onPress={() => setMenuVisible(!menuVisible)} style={styles.menuButton}>
         <Icon name="menu" size={30} color="#1E567D" />
       </TouchableOpacity>
 
-      {/* 菜单 */}
       {menuVisible && (
         <View style={styles.menu}>
           <TouchableOpacity onPress={() => router.push("/settings")}>
@@ -37,16 +69,10 @@ const HomePage = () => {
         </View>
       )}
 
-      {/* 欢迎标语 */}
       <Text style={styles.welcomeText}>Welcome to VitalGaze</Text>
-
-      {/* 个性化问候文本，放置在中间 */}
-      <Text style={styles.personalizedGreeting}>Hello, {username}!</Text>
-
-      {/* 副标题 */}
+      <Text style={styles.personalizedGreeting}>Hello, {username}!</Text>  {/* 显示用户名 */}
       <Text style={styles.subtitle}>Track your eye health and progress</Text>
 
-      {/* 信息卡片 */}
       <View style={styles.card}>
         <Text>Your Progress</Text>
         <Text>Eye relaxation exercises completed: 20</Text>
@@ -59,7 +85,6 @@ const HomePage = () => {
         <Text>Duration: 15 mins</Text>
       </View>
 
-      {/* 按钮区域 */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => router.push("/training")}>
           <Text style={styles.buttonText}>Start Training</Text>
@@ -79,7 +104,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     right: 20,
-    zIndex: 10,  // 保证按钮在最上层
+    zIndex: 10,
   },
   menu: {
     position: "absolute",
@@ -92,11 +117,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 4,
     padding: 10,
-    zIndex: 20,  // 设置更高的 zIndex 确保菜单框在最上层
+    zIndex: 20,
   },
   menuItem: {
     padding: 15,
-    fontSize: 18,  // 增大字体大小
+    fontSize: 18,
     color: "#1E567D",
   },
   welcomeText: {
@@ -104,14 +129,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#1E567D",
     marginTop: 80,
-    textAlign: 'center',  // 居中对齐
+    textAlign: 'center',
   },
   personalizedGreeting: {
     fontSize: 25,
     color: "#666",
     fontStyle: "italic",
     marginTop: 20,
-    textAlign: 'center',  // 居中对齐
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 18,

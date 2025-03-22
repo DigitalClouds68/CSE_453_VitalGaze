@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // 引入Ionicons图标库
+import AsyncStorage from "@react-native-async-storage/async-storage"; // 引入AsyncStorage
 
 const SignInPage: React.FC = () => {
   const [email, setEmail] = useState(""); // 存储邮箱
@@ -43,6 +44,9 @@ const SignInPage: React.FC = () => {
       const data = await response.json(); // 解析返回的数据
 
       if (response.ok) {
+        // 登录成功，将token存储在本地
+        await AsyncStorage.setItem("authToken", data.token);
+
         Alert.alert("Success", "Login successful!");
         router.push("/(tabs)/home"); // 登录成功后跳转到主页
       } else {
@@ -60,7 +64,8 @@ const SignInPage: React.FC = () => {
       {/* 返回按钮 */}
       <TouchableOpacity onPress={() => router.replace('/')} style={{ position: "absolute", top: 40, left: 20 }}>
         <Ionicons name="arrow-back" size={30} color="#1E567D" />
-        </TouchableOpacity>
+      </TouchableOpacity>
+
       {/* 页面顶部 logo 和设备名称 */}
       <View style={{ alignItems: "center", marginBottom: 40 }}>
         <Text style={{ fontSize: 40, fontWeight: "bold", color: "#1E567D" }}>VitalGaze</Text>
