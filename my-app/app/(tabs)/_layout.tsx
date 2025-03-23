@@ -20,11 +20,19 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"  
         options={{
-          title: 'index'
+          title: 'Home',
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="settings"  // 确保这个与 app/settings.tsx 配置一致
+        name="UnityWebGL"
+        options={{
+          title: 'Play Game',
+          tabBarIcon: ({ color }) => <TabBarIcon name="gamepad" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
         options={{
           title: 'Settings',
           tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,

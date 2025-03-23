@@ -20,8 +20,7 @@ exports.signup = async (req, res) => {
   }
 };
 
-// 用户登录
-exports.login = async (req, res) => {
+exports.signin = async (req, res) => {
   try {
     const { email, password } = req.body;
     

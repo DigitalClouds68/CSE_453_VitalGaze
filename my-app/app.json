@@ -29,11 +29,17 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-secure-store"
+      "expo-screen-orientation"
     ],
     "experiments": {
       "typedRoutes": true
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+
+    "extra": {
+      "API_URL": /*学校的WIFI：*/"http://10.84.95.212:5000"
+      /*你的ip地址：*/
+      //*My*/"API_URL": "http://10.12.70.3:5000"
+    }
   }
 }
