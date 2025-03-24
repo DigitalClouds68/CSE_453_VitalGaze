@@ -27,8 +27,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="UnityWebGL"
         options={{
-          title: 'Play Game',
           tabBarIcon: ({ color }) => <TabBarIcon name="gamepad" color={color} />,
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
