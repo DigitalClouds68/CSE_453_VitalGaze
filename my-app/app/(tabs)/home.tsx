@@ -32,10 +32,10 @@ const HomePage = () => {
 
         if (response.ok) {
           const data = await response.json();
-          if (data && data.username) {
-            setUsername(data.username);
+          if (data && data.user.username) {
+            setUsername(data.user.username);
             // 可选：保存用户名到AsyncStorage以便离线使用
-            await AsyncStorage.setItem("username", data.username);
+            await AsyncStorage.setItem("username", data.user.username);
           } else {
             console.log("Invalid user data received");
             router.push('/(tabs)/signin');
@@ -171,18 +171,6 @@ const HomePage = () => {
   };
 
   // 计算上次训练距今时间
-  const getTimeAgo = () => {
-    if (!lastSession) return "No recent sessions";
-    
-    const lastTime = new Date(lastSession.timestamp);
-    const now = new Date();
-    const diffMs = now - lastTime;
-    
-    if (diffMs < 60000) return "Just now";
-    if (diffMs < 3600000) return `${Math.floor(diffMs / 60000)} mins ago`;
-    if (diffMs < 86400000) return `${Math.floor(diffMs / 3600000)} hours ago`;
-    return `${Math.floor(diffMs / 86400000)} days ago`;
-  };
 
   // 如果正在加载数据，可以显示加载指示器
   if (isLoading) {
@@ -251,7 +239,6 @@ const HomePage = () => {
             <Icon name="time-outline" size={24} color="#1E567D" />
           </View>
           <Text style={styles.statTitle}>Last Session</Text>
-          <Text style={styles.statValue}>{getTimeAgo()}</Text>
           <Text style={styles.statSubtext}>15 mins duration</Text>
         </View>
       </View>
