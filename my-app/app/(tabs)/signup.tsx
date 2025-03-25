@@ -8,7 +8,7 @@ const SignUpPage: React.FC = () => {
   const [username, setUsername] = useState(""); // 存储用户名
   const [password, setPassword] = useState(""); // 存储密码
   const [confirmPassword, setConfirmPassword] = useState(""); // 存储确认密码
-
+  const API_BASE_URL = process.env.REACT_APP_API_URL // 使用环境变量
   // 错误提示
   const [emailError, setEmailError] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -31,7 +31,7 @@ const SignUpPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://192.168.1.217:5000/api/auth/signup", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, username, password }),

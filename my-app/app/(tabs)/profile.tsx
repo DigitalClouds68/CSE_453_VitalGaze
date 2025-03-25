@@ -10,6 +10,7 @@ export default function ProfilePage() {
   // State for displaying current profile data (from database)
   const [currentUsername, setCurrentUsername] = useState('');
   const [currentEmail, setCurrentEmail] = useState('');
+  const API_BASE_URL = process.env.REACT_APP_API_URL // 使用环境变量
   
   // State variables for form input (what user is editing)
   const [username, setUsername] = useState('');
@@ -52,8 +53,7 @@ export default function ProfilePage() {
       setFetchingProfile(true);
       const token = await getToken();
       if (!token) return;
-
-      const response = await fetch('http://192.168.1.217:5000/api/user/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -108,8 +108,7 @@ export default function ProfilePage() {
       setIsLoading(true);
       const token = await getToken();
       if (!token) return;
-
-      const response = await fetch('http://192.168.1.217:5000/api/user/username', {
+      const response = await fetch(`${API_BASE_URL}/api/user/username`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -148,8 +147,7 @@ export default function ProfilePage() {
       setIsLoading(true);
       const token = await getToken();
       if (!token) return;
-
-      const response = await fetch('http://192.168.1.217:5000/api/user/email', {
+      const response = await fetch(`${API_BASE_URL}/api/user/email`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -197,8 +195,7 @@ export default function ProfilePage() {
       setIsLoading(true);
       const token = await getToken();
       if (!token) return;
-
-      const response = await fetch('http://192.168.1.217:5000/api/user/password', {
+      const response = await fetch(`${API_BASE_URL}/api/user/password`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

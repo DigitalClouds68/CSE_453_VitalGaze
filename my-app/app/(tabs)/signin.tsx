@@ -35,7 +35,7 @@ const SignInPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://192.168.1.217:5000/api/auth/login", {
+      const response = await fetch("http://10.223.121.122:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }), // 发送邮箱和密码
@@ -44,7 +44,6 @@ const SignInPage: React.FC = () => {
       const data = await response.json(); // 解析返回的数据
 
       if (response.ok) {
-        // 登录成功，将token存储在本地
         await AsyncStorage.setItem("authToken", data.token);
 
         Alert.alert("Success", "Login successful!");

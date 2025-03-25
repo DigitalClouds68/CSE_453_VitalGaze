@@ -1,4 +1,3 @@
-// apiServer.js
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -31,44 +30,28 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: "Internal Server Error" });
 });
 
-// 启动服务器
-const PORT = process.env.API_PORT || 5000;
-
-// 获取本地 IP 地址,用于一般的非虚拟机环境。
-// function getLocalIP() {
-//   const interfaces = os.networkInterfaces();
-//   for (const name in interfaces) {
-//     for (const net of interfaces[name]) {
-//       if (net.family === 'IPv4' && !net.internal) {
-//         return net.address;
-//       }
-//     }
-//   }
-//   return "localhost"; // Fallback
-// }
-
-// 本人有虚拟机，用以下代码获取本地 IP 地址
+// 获取本地 IP 地址的函数
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
   for (const name in interfaces) {
     for (const net of interfaces[name]) {
-      // 1) 跳过内网以外
-      // 2) 跳过 IPv6
-      // 3) 跳过可能是虚拟机网卡 (可用 name.includes('Virtual') 作粗略过滤)
-      if (net.family === 'IPv4' && 
-          !net.internal && 
-          !name.includes('Virtual') &&
-          net.address.startsWith('10.') // 如果你常在10.x网段
-      ) {
-        return net.address;
+      // 过滤掉 IPv6、虚拟机网卡，并且排除内部环回地址
+      if (net.family === 'IPv4' && !net.internal && !name.includes('Virtual')) {
+        // 确保我们返回一个 10.x.x.x 网段的 IP 地址
+        if (net.address.startsWith('10.') || net.address.startsWith('192.') || net.address.startsWith('172.')) {
+          return net.address;
+        }
       }
     }
   }
-  return "localhost";
+  return "localhost";  // 如果没有找到符合条件的 IP 地址，回退到 localhost
 }
+
 ///////////////////////////////////////////////////////////////////////////
 
+// 获取本地网络 IP
 const localIP = getLocalIP();
+const PORT = process.env.API_PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 API server is running at:`);
