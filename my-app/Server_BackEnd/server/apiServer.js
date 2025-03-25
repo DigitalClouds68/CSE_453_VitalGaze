@@ -19,6 +19,14 @@ app.use(cors({
 
 app.use(express.json());
 
+// 全局请求日志中间件：记录每个请求的信息
+app.use((req, res, next) => {
+  console.log(`Request received: ${req.method} ${req.originalUrl}`);
+  console.log('Request body:', req.body); // 如果请求是 POST 或 PUT，会有请求体
+  console.log('Request headers:', req.headers); // 打印请求头部信息
+  next(); // 继续处理请求
+});
+
 // 加载 API 路由
 app.use('/api/auth', require('./routes/authRoutes'));  // 认证路由
 app.use('/api/user', require('./routes/userRoutes'));  // 用户相关路由
@@ -35,16 +43,14 @@ function getLocalIP() {
   const interfaces = os.networkInterfaces();
   for (const name in interfaces) {
     for (const net of interfaces[name]) {
-      // 过滤掉 IPv6、虚拟机网卡，并且排除内部环回地址
       if (net.family === 'IPv4' && !net.internal && !name.includes('Virtual')) {
-        // 确保我们返回一个 10.x.x.x 网段的 IP 地址
         if (net.address.startsWith('10.') || net.address.startsWith('192.') || net.address.startsWith('172.')) {
           return net.address;
         }
       }
     }
   }
-  return "localhost";  // 如果没有找到符合条件的 IP 地址，回退到 localhost
+  return "localhost"; // 如果没有找到符合条件的 IP 地址，回退到 localhost
 }
 
 ///////////////////////////////////////////////////////////////////////////
