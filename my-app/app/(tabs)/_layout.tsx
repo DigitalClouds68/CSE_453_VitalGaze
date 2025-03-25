@@ -24,14 +24,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="UnityWebGL"
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="gamepad" color={color} />,
           headerShown: false,
           tabBarStyle: { display: 'none' },
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="settings"
         options={{

@@ -53,7 +53,7 @@ const StartPage: React.FC = () => {
       </TouchableOpacity>
 
       {/* Play Unity Game Button */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={{
           backgroundColor: '#FF5733',
           width: '100%',
@@ -65,7 +65,7 @@ const StartPage: React.FC = () => {
         onPress={() => router.push('/UnityWebGL')}
       >
         <Text style={{ color: '#fff', fontSize: 20, fontWeight: '600' }}>Play Game</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

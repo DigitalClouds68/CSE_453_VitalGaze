@@ -21,6 +21,10 @@ const TrainingScreen = () => {
     setTimeout(() => {
       setCurrentMode(mode); // Set new mode after delay
       startTraining(mode); // Start training with the new mode
+      
+      // ✅ 跳转到 Unity WebGL 页面
+      router.push("/UnityWebGL");
+    
     }, 500); // Small delay for visual transition
   };
 
