@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView, Image } fr
 import Icon from "react-native-vector-icons/Ionicons";
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+const API_BASE_URL = process.env.REACT_APP_API_URL // 使用环境变量
 
 const HomePage = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -23,7 +24,7 @@ const HomePage = () => {
           return;
         }
         
-        const response = await fetch("http://192.168.1.217:5000/api/user/profile", {
+        const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -139,7 +140,7 @@ const HomePage = () => {
               // 尝试在服务器端也使token失效（如果API支持）
               if (token) {
                 try {
-                  await fetch("http://192.168.1.217:5000/api/auth/logout", {
+                  await fetch(`${API_BASE_URL}/api/auth/logout`, {
                     method: "POST",
                     headers: {
                       "Authorization": `Bearer ${token}`,

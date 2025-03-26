@@ -35,7 +35,8 @@ const SignInPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://192.168.1.217:5000/api/auth/login", {
+      console.log("Sending request with email:", email);  // 调试用，检查发送的请求体
+      const response = await fetch("https://cse-453-vitalgaze.onrender.com/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }), // 发送邮箱和密码
@@ -45,7 +46,6 @@ const SignInPage: React.FC = () => {
 
       if (response.ok) {
         await AsyncStorage.setItem("authToken", data.token);
-
         Alert.alert("Success", "Login successful!");
         router.push("/(tabs)/home"); // 登录成功后跳转到主页
       } else {
