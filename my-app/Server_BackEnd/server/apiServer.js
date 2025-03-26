@@ -32,6 +32,16 @@ app.use('/api/auth', require('./routes/authRoutes'));  // 认证路由
 app.use('/api/user', require('./routes/userRoutes'));  // 用户相关路由
 app.use('/api/training', require('./routes/trainingRoutes'));  // 训练相关路由
 
+// 健康检查路由
+app.get('/healthz', (req, res) => {
+  res.status(200).json({ success: true, message: 'API is up and running!' });
+});
+
+// 测试路由
+app.get('/test', (req, res) => {
+  res.status(200).json({ success: true, message: 'Test route is working!' });
+});
+
 // 错误处理
 app.use((err, req, res, next) => {
   console.error("💥 ERROR:", err.stack);
