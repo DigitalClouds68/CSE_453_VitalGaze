@@ -82,15 +82,6 @@ const UnityWebGLScreen = () => {
               console.log("📡 Sending data to React Native:", data);
               window.ReactNativeWebView.postMessage(JSON.stringify(data));
             };
-            setInterval(() => {
-              const simulatedData = {
-                worldPosition: { x: Math.random() * 10, y: Math.random() * 10, z: 0 },
-                screenPosition: { x: Math.random() * 500, y: Math.random() * 500 }
-              };
-              console.log("🔹 Simulated Unity Data:", simulatedData);
-              window.sendCoordinates(simulatedData);
-            }, 1000);
-          }
 
           // 这里新增 UnityCloseGame
           if (!window.UnityCloseGame) {
