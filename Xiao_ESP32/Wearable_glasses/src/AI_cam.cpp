@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "main.h"
 
 /* Edge Impulse Arduino examples
  * Copyright (c) 2022 EdgeImpulse Inc.
@@ -194,6 +195,9 @@ void AI_Detection()
         }
         // this is the value to send to phone 
         ei_printf("    %s (%f) [ x: %u, y: %u, width: %u, height: %u ]\n", bb.label, bb.value, bb.x, bb.y, bb.width, bb.height);
+            
+        // ✅ 发送给手机或前端
+        sendEyeData(bb.x, bb.y, bb.width, bb.height);
     }
     if (!bb_found) {
         ei_printf("    No objects found\n");
