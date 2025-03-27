@@ -3,7 +3,10 @@ import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView, Image } fr
 import Icon from "react-native-vector-icons/Ionicons";
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const API_BASE_URL = process.env.REACT_APP_API_URL // 使用环境变量
+import Constants from "expo-constants";
+
+// API Base URL (fallback if environment variable is missing)
+const API_BASE_URL =  "https://cse-453-vitalgaze.onrender.com";
 
 const HomePage = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -16,14 +19,17 @@ const HomePage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       setIsLoading(true);
+      console.log("Starting to fetch user data...");
       try {
         const token = await AsyncStorage.getItem("authToken");
+        console.log("Auth Token:", token);
+
         if (!token) {
           console.log("No auth token found, redirecting to signin");
           router.push('/(tabs)/signin');
           return;
         }
-        
+
         const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
           method: "GET",
           headers: {
@@ -33,6 +39,8 @@ const HomePage = () => {
 
         if (response.ok) {
           const data = await response.json();
+          console.log("User data received:", data);
+
           if (data && data.user.username) {
             setUsername(data.user.username);
             // 可选：保存用户名到AsyncStorage以便离线使用
@@ -60,6 +68,7 @@ const HomePage = () => {
           const localUsername = await AsyncStorage.getItem("username");
           if (localUsername) {
             setUsername(localUsername);
+            console.log("Local username fetched:", localUsername);
           } else {
             router.push('/(tabs)/signin');
           }
@@ -69,6 +78,7 @@ const HomePage = () => {
         }
       } finally {
         setIsLoading(false);
+        console.log("User data fetch complete.");
       }
     };
 
@@ -76,6 +86,8 @@ const HomePage = () => {
     const fetchLastSession = async () => {
       try {
         const lastSessionData = await AsyncStorage.getItem("lastTrainingSession");
+        console.log("Last session data:", lastSessionData);
+        
         if (lastSessionData) {
           setLastSession(JSON.parse(lastSessionData));
         }
@@ -90,6 +102,7 @@ const HomePage = () => {
 
   // 处理Token过期情况
   const handleTokenExpired = async () => {
+    console.log("Token expired, clearing user data...");
     await clearAllUserData();
     Alert.alert(
       "Session Expired",
@@ -126,6 +139,7 @@ const HomePage = () => {
 
   // 增强的登出处理
   const handleSignOut = async () => {
+    console.log("Sign out initiated...");
     Alert.alert(
       "Sign Out", 
       "Are you sure you want to sign out?", 
@@ -136,6 +150,7 @@ const HomePage = () => {
           onPress: async () => {
             try {
               const token = await AsyncStorage.getItem("authToken");
+              console.log("Token on sign out:", token);
               
               // 尝试在服务器端也使token失效（如果API支持）
               if (token) {
@@ -158,6 +173,7 @@ const HomePage = () => {
               
               // 关闭菜单
               setMenuVisible(false);
+              console.log("Menu closed after sign out");
               
               // 跳转到登录页面
               router.push('/(tabs)/signin');
@@ -171,7 +187,6 @@ const HomePage = () => {
     );
   };
 
-  // 计算上次训练距今时间
 
   // 如果正在加载数据，可以显示加载指示器
   if (isLoading) {

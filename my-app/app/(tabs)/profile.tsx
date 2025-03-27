@@ -3,6 +3,10 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from "expo-constants";
+
+// API Base URL (fallback if environment variable is missing)
+const API_BASE_URL =  "https://cse-453-vitalgaze.onrender.com";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -10,7 +14,6 @@ export default function ProfilePage() {
   // State for displaying current profile data (from database)
   const [currentUsername, setCurrentUsername] = useState('');
   const [currentEmail, setCurrentEmail] = useState('');
-  const API_BASE_URL = process.env.REACT_APP_API_URL // 使用环境变量
   
   // State variables for form input (what user is editing)
   const [username, setUsername] = useState('');
@@ -225,17 +228,22 @@ export default function ProfilePage() {
 
   // Handle saving changes based on which field is being edited
   const handleSaveChanges = () => {
+    console.log(`Editing: ${editing}`);
     switch (editing) {
       case 'username':
+        console.log('Saving username...');
         handleSaveUsername();
         break;
       case 'email':
+        console.log('Saving email...');
         handleSaveEmail();
         break;
       case 'password':
+        console.log('Saving password...');
         handleSavePassword();
         break;
       default:
+        console.log('No changes to save.');
         break;
     }
   };

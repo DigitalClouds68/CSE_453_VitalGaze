@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Animated, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Animated, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons"; // 引入Ionicons图标库
-import AsyncStorage from "@react-native-async-storage/async-storage"; // 引入AsyncStorage
+import { Ionicons } from "@expo/vector-icons"; 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const API_BASE_URL = "https://cse-453-vitalgaze.onrender.com";
 
 const SignInPage: React.FC = () => {
-  const [email, setEmail] = useState(""); // 存储邮箱
-  const [password, setPassword] = useState(""); // 存储密码
-  const router = useRouter(); // 路由
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const scaleAnim = new Animated.Value(1); // 用于按钮点击时的动画
+  const scaleAnim = new Animated.Value(1);
 
-  // 按钮按下时的动画效果
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
       toValue: 0.94,
@@ -19,7 +21,6 @@ const SignInPage: React.FC = () => {
     }).start();
   };
 
-  // 按钮恢复正常状态
   const handlePressOut = () => {
     Animated.spring(scaleAnim, {
       toValue: 1,
@@ -27,37 +28,63 @@ const SignInPage: React.FC = () => {
     }).start();
   };
 
-  // 登录处理函数
   const handleSignIn = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Please enter email and password");
       return;
     }
 
+    setLoading(true);
+
     try {
-      console.log("Sending request with email:", email);  // 调试用，检查发送的请求体
-      const response = await fetch("https://cse-453-vitalgaze.onrender.com/api/auth/login", {
+      console.log("📤 Sending request with:", { email, password });
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }), // 发送邮箱和密码
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json(); // 解析返回的数据
+      console.log("📥 Received response:", response.status, response.statusText);
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.error("⚠️ Failed to parse JSON response:", jsonError);
+        Alert.alert("Error", "Invalid server response.");
+        return;
+      }
+
+      console.log("🔍 Response JSON:", data);
 
       if (response.ok) {
+        if (!data.token) {
+          Alert.alert("Error", "No authentication token received.");
+          return;
+        }
+
         await AsyncStorage.setItem("authToken", data.token);
+        console.log("✅ Auth token saved:", data.token);
+
+        if (data.user) {
+          await AsyncStorage.setItem("user", JSON.stringify(data.user));
+          console.log("✅ User data saved:", data.user);
+        }
+
         Alert.alert("Success", "Login successful!");
-        router.push("/(tabs)/home"); // 登录成功后跳转到主页
+        router.push("/(tabs)/home");
       } else {
-        console.log("Login failed:", data.error || "Invalid credentials");
+        console.log("❌ Login failed:", data.error || "Invalid credentials");
         Alert.alert("Error", data.error || "Login failed. Please try again.");
       }
     } catch (error) {
-      console.log("Network request failed:", error);
+      console.error("🌐 Network request failed:", error);
       Alert.alert("Error", "Network request failed. Please check your connection.");
+    } finally {
+      setLoading(false);
     }
   };
-
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
       {/* 返回按钮 */}
