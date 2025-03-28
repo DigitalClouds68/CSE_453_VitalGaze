@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "main.h"
 
+extern void broadcastEyeData(const String& jsonData);
+
 /* Edge Impulse Arduino examples
  * Copyright (c) 2022 EdgeImpulse Inc.
  *
@@ -151,7 +153,7 @@ void AI_Detection()
 {
 
     // instead of wait_ms, we'll wait on the signal, this allows threads to cancel us...
-    if (ei_sleep(5) != EI_IMPULSE_OK) {
+    if (ei_sleep(1) != EI_IMPULSE_OK) {
         return;
     }
 
@@ -193,11 +195,14 @@ void AI_Detection()
         if (bb.value == 0) {
             continue;
         }
-        // this is the value to send to phone 
-        ei_printf("    %s (%f) [ x: %u, y: %u, width: %u, height: %u ]\n", bb.label, bb.value, bb.x, bb.y, bb.width, bb.height);
+        // // this is the value to send to phone 
+        // ei_printf("    %s (%f) [ x: %u, y: %u, width: %u, height: %u ]\n", bb.label, bb.value, bb.x, bb.y, bb.width, bb.height);
             
-        // ✅ 发送给手机或前端
-        sendEyeData(bb.x, bb.y, bb.width, bb.height);
+        // // ✅ 发送给手机或前端
+        // sendEyeData(bb.x, bb.y, bb.width, bb.height);
+        String json = String("{\"x\":") + bb.x + ",\"y\":" + bb.y + ",\"w\":" + bb.width + ",\"h\":" + bb.height + "}";
+
+        broadcastEyeData(json);  // ✅ 广播数据给所有WebSocket客户端
     }
     if (!bb_found) {
         ei_printf("    No objects found\n");

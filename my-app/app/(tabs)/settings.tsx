@@ -32,7 +32,12 @@ const SettingsScreen = () => {
           <MaterialIcons name="wifi" size={24} color="#1E567D" />
           <Text style={styles.settingText}>Device Management (Wi-Fi)</Text>
         </TouchableOpacity>
-
+        
+        <TouchableOpacity style={styles.settingItem} onPress={() => router.push("/settings/analysis")}>
+          <MaterialIcons name="analytics" size={24} color="#1E567D" />
+          <Text style={styles.settingText}>Data Analysis & Fitting</Text>
+        </TouchableOpacity>
+      
         {/* 你可以在这里继续添加更多设置项 */}
       </View>
     </ScrollView>
