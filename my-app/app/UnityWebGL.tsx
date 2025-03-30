@@ -1,68 +1,81 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { WebView } from "react-native-webview";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { useRouter, useFocusEffect } from "expo-router"; // ✅ from expo-router
+import { useRouter, useFocusEffect } from "expo-router";
+import { useDataContext } from "./contexts/DataContext";
 
 const WEBGL_URL = process.env.EXPO_PUBLIC_WEBGL_URL || "http://localhost:8080/index.html";
 
 const UnityWebGLScreen = () => {
-  // ✅ 使用 useRouter() 来做导航
   const router = useRouter();
-
-  const [coordinates, setCoordinates] = useState({
-    world: { x: 0, y: 0, z: 0 },
-    screen: { x: 0, y: 0 },
-  });
+  const { unityCoords, setUnityCoords, eyeData } = useDataContext(); // ❗ 同时获取 eyeData
 
   useFocusEffect(
     useCallback(() => {
-      // 每次进入页面时都锁横屏
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-  
-      // 可选：离开时恢复竖屏（如果不在 training 页面已经做了）
       return () => {
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
       };
     }, [])
   );
 
-  // 处理 Unity 发来的消息
   const handleMessageFromUnity = (event: { nativeEvent: { data: string } }) => {
     try {
       console.log("📩 Raw event data from WebView:", event.nativeEvent.data);
       const msg = JSON.parse(event.nativeEvent.data);
 
-      // ★ 如果类型是 CLOSE_GAME，就跳转到 /training
       if (msg.type === "CLOSE_GAME") {
-        console.log("✅ Received CLOSE_GAME from Unity. Going to /training page...");
-        // 这里改成 router.push("/training")
         router.push("/training");
         return;
       }
-
-      // 否则解析坐标
-      if (!msg.worldPosition || !msg.screenPosition) {
+      if (!msg.data || !msg.data.worldPosition || !msg.data.screenPosition) {
         console.warn("⚠️ Invalid data structure received:", msg);
         return;
       }
 
-      setCoordinates({
+      // 存入全局
+      setUnityCoords({
         world: {
-          x: msg.worldPosition.x || 0,
-          y: msg.worldPosition.y || 0,
-          z: msg.worldPosition.z || 0,
+          x: msg.data.worldPosition.x || 0,
+          y: msg.data.worldPosition.y || 0,
+          z: msg.data.worldPosition.z || 0,
         },
         screen: {
-          x: msg.screenPosition.x || 0,
-          y: msg.screenPosition.y || 0,
+          x: msg.data.screenPosition.x || 0,
+          y: msg.data.screenPosition.y || 0,
         },
       });
-      console.log("✅ Successfully updated coordinates:", msg);
     } catch (error) {
       console.error("❌ JSON parsing error from Unity:", error);
     }
   };
+
+  // ===【1】计算误差距离 (在渲染阶段或 useMemo 中都行) ===
+  let fitScorePercent = 0;
+  if (eyeData) {
+    // 假设摄像头分辨率
+    const cameraW = 320;
+    const cameraH = 240;
+    // 假设 Unity 屏幕分辨率
+    const unityW = 3200;
+    const unityH = 2000;
+
+    const mappedEyeX = (eyeData.x / cameraW) * unityW;
+    const mappedEyeY = unityH - (eyeData.y / cameraH) * unityH;
+
+    const dx = unityCoords.screen.x - mappedEyeX;
+    const dy = unityCoords.screen.y - mappedEyeY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    // 选用"屏幕对角线"当作 maxDist
+    const maxDist = Math.sqrt(unityW*unityW + unityH*unityH); 
+    // 计算分数
+    let score = 1 - dist / maxDist;
+    if (score < 0) score = 0;   // 最低 0
+    if (score > 1) score = 1;   // 最高 1
+    fitScorePercent = score * 100;
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -74,42 +87,21 @@ const UnityWebGLScreen = () => {
         startInLoadingState
         renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
         allowsFullscreenVideo
-        onMessage={handleMessageFromUnity}
         injectedJavaScript={`
-          if (!window.sendCoordinates) {
-            console.log("✅ Injecting sendCoordinates function into WebView...");
+          (function() {
             window.sendCoordinates = (data) => {
-              console.log("📡 Sending data to React Native:", data);
-              window.ReactNativeWebView.postMessage(JSON.stringify(data));
+              window.ReactNativeWebView.postMessage(JSON.stringify({ type: "COORDINATES", data }));
             };
-            setInterval(() => {
-              const simulatedData = {
-                worldPosition: { x: Math.random() * 10, y: Math.random() * 10, z: 0 },
-                screenPosition: { x: Math.random() * 500, y: Math.random() * 500 }
-              };
-              console.log("🔹 Simulated Unity Data:", simulatedData);
-              window.sendCoordinates(simulatedData);
-            }, 1000);
-          }
-
-          // 这里新增 UnityCloseGame
-          if (!window.UnityCloseGame) {
             window.UnityCloseGame = () => {
-              console.log("📡 Unity calls: window.UnityCloseGame()");
-              if (window.ReactNativeWebView) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                  type: "CLOSE_GAME"
-                }));
-              }
+              window.ReactNativeWebView.postMessage(JSON.stringify({ type: "CLOSE_GAME" }));
             };
-          }
-
-          console.log("✅ Injected JavaScript executed.");
-          true;
+            true;
+          })();
         `}
+        onMessage={handleMessageFromUnity}
       />
 
-      {/* 显示来自 Unity 的坐标 */}
+      {/* 显示来自 Unity 的坐标 + 拟合度 */}
       <View style={{
         position: "absolute",
         top: 20,
@@ -118,11 +110,28 @@ const UnityWebGLScreen = () => {
         padding: 10,
         borderRadius: 5
       }}>
-        <Text style={{ color: "white", fontSize: 16 }}>
-          🌍 World: x: {coordinates.world.x.toFixed(2)}, y: {coordinates.world.y.toFixed(2)}, z: {coordinates.world.z.toFixed(2)}
+        {/* Unity 坐标 */}
+        <Text style={{ color: "white", fontSize: 14 }}>
+          🌍 World: x: {unityCoords.world.x.toFixed(2)}, y: {unityCoords.world.y.toFixed(2)}, z: {unityCoords.world.z.toFixed(2)}
         </Text>
-        <Text style={{ color: "white", fontSize: 16 }}>
-          📱 Screen: x: {coordinates.screen.x.toFixed(2)}, y: {coordinates.screen.y.toFixed(2)}
+        <Text style={{ color: "white", fontSize: 14 }}>
+          📱 Screen: x: {unityCoords.screen.x.toFixed(2)}, y: {unityCoords.screen.y.toFixed(2)}
+        </Text>
+
+        {/* 眼睛坐标 (raw) */}
+        {eyeData ? (
+          <Text style={{ color: "white", fontSize: 14 }}>
+            👁 Eye: x:{eyeData.x}, y:{eyeData.y}
+          </Text>
+        ) : (
+          <Text style={{ color: "white", fontSize: 14 }}>
+            No Eye Data
+          </Text>
+        )}
+
+        {/* 映射后的拟合距离 */}
+        <Text style={{ color: "white", fontSize: 14 }}>
+        📐 FitScore: {fitScorePercent.toFixed(1)} %
         </Text>
       </View>
     </View>
