@@ -11,7 +11,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useDataContext } from "../contexts/DataContext";
 
-const WS_URL = "ws://10.12.70.10:8080/ws"; // ✅ 替换为你ESP32的实际IP
+const WS_URL = "ws://172.20.10.3:8080/ws"; // ✅ 替换为你ESP32的实际IP
 
 const WifiScreen = () => {
   const router = useRouter();
