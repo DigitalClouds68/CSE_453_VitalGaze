@@ -15,7 +15,7 @@
   "dependencies": {
     "@expo/server": "^0.5.3",
     "@expo/vector-icons": "^14.0.4",
-    "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-picker/picker": "2.9.0",
     "@react-navigation/native": "^6.0.2",
     "@types/react-router-dom": "^5.3.3",
@@ -23,7 +23,7 @@
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "expo": "^52.0.0",
+    "expo": "^52.0.41",
     "expo-constants": "~17.0.8",
     "expo-env": "^1.1.1",
     "expo-font": "~13.0.4",
