@@ -11,12 +11,13 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useDataContext } from "../contexts/DataContext";
 
-const WS_URL = "ws://172.20.10.3:8080/ws"; // ✅ 替换为你ESP32的实际IP
+// const WS_URL = "ws://172.20.10.3:8080/ws"; // ✅ Change this to your ESP32 WebSocket URL
+const WS_URL = "wss://vitalgaze-ws-server.onrender.com";
 
 const WifiScreen = () => {
   const router = useRouter();
   const [connected, setConnected] = useState(false);
-  // 从全局获取 setEyeData
+  // Get setEyeData globally
   const { eyeData, setEyeData } = useDataContext();
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
@@ -28,7 +29,7 @@ const WifiScreen = () => {
       ws = new WebSocket(WS_URL);
   
       ws.onopen = () => {
-        console.log("🔌 WebSocket连接成功！");
+        console.log("🔌 WebSocket connect successfully！");
         setConnected(true);
         clearInterval(reconnectInterval);
       };
@@ -40,13 +41,13 @@ const WifiScreen = () => {
   
       ws.onerror = () => {
         setConnected(false);
-        console.error("❌ WebSocket错误，尝试重新连接...");
+        console.error("❌ WebSocket connected failed, try to reconnect...");
       };
   
       ws.onclose = () => {
         setConnected(false);
-        console.warn("🔌 WebSocket连接已关闭，尝试重新连接...");
-        // 定时自动重连
+        console.warn("🔌 WebSocket connection is closed，try to reconnect...");
+        // Attempt to reconnect after 3 seconds
         reconnectInterval = setInterval(connectWebSocket, 3000);
       };
     };

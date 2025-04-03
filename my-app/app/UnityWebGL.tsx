@@ -9,7 +9,7 @@ const WEBGL_URL = process.env.EXPO_PUBLIC_WEBGL_URL || "http://localhost:8080/in
 
 const UnityWebGLScreen = () => {
   const router = useRouter();
-  const { unityCoords, setUnityCoords, eyeData } = useDataContext(); // ❗ 同时获取 eyeData
+  const { unityCoords, setUnityCoords, eyeData } = useDataContext(); // ❗ Get eyedata from global state
 
   useFocusEffect(
     useCallback(() => {
@@ -34,7 +34,7 @@ const UnityWebGLScreen = () => {
         return;
       }
 
-      // 存入全局
+      // Save the coordinates to global state
       setUnityCoords({
         world: {
           x: msg.data.worldPosition.x || 0,
@@ -51,7 +51,7 @@ const UnityWebGLScreen = () => {
     }
   };
 
-  // ===【1】计算误差距离 (在渲染阶段或 useMemo 中都行) ===
+  // Calculate the distance between the eye data and Unity coordinates(Can be in render phase or useMemo)
   let fitScorePercent = 0;
   if (eyeData) {
     // 假设摄像头分辨率
@@ -70,10 +70,10 @@ const UnityWebGLScreen = () => {
 
     // 选用"屏幕对角线"当作 maxDist
     const maxDist = Math.sqrt(unityW*unityW + unityH*unityH); 
-    // 计算分数
+    // Calculate the fit score
     let score = 1 - dist / maxDist;
-    if (score < 0) score = 0;   // 最低 0
-    if (score > 1) score = 1;   // 最高 1
+    if (score < 0) score = 0;   // Lowest is 0
+    if (score > 1) score = 1;   // Highest is 1
     fitScorePercent = score * 100;
   }
 
