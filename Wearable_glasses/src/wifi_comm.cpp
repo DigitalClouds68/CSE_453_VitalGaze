@@ -1,13 +1,14 @@
 #include <WiFi.h>
+#include <WebSocketsClient.h>
 
-// 你自己的热点/路由器
+// WiFi credentials
 const char* ssid = "Cloud";
 const char* password = "00000000";
 
-// 目标：发送给 App 或网页的 IP（先临时用调试服务器）
-const char* host = "172.20.10.2";  // 改成你电脑或服务器 IP
-const uint16_t port = 5000;
+// WebSocket client实例
+WebSocketsClient webSocket;
 
+// 初始化 WiFi
 void initWiFi() {
   Serial.println("[WiFi] Connecting...");
   WiFi.begin(ssid, password);
@@ -22,18 +23,29 @@ void initWiFi() {
   Serial.println(WiFi.localIP());
 }
 
+// 初始化 WebSocket Client（连接到 Render 云服务器）
+void initWebSocketClient() {
+  // WebSocket client 连接到 Render Cloud Server
+  webSocket.beginSSL("vitalgaze-websocket-server.onrender.com", 443, "/");  // 使用 WSS
+  webSocket.setReconnectInterval(3000); // 自动重连
+
+  webSocket.onEvent([](WStype_t type, uint8_t *payload, size_t length) {
+    if (type == WStype_CONNECTED) {
+      Serial.println("✅ Connected to Render WebSocket!");
+    } else if (type == WStype_DISCONNECTED) {
+      Serial.println("❌ Disconnected from WebSocket.");
+    }
+  });
+}
+
+// 循环中需要调用
+void updateWebSocketLoop() {
+  webSocket.loop();
+}
+
+// ✅ 实际发送数据
 void sendEyeData(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
-  WiFiClient client;
-
-  if (!client.connect(host, port)) {
-    Serial.println("[WiFi] ❌ Connection failed");
-    return;
-  }
-
   String json = String("{\"x\":") + x + ",\"y\":" + y + ",\"w\":" + w + ",\"h\":" + h + "}";
-
-  client.println(json);
-  client.stop();
-
-  Serial.println("[WiFi] ✅ Data sent: " + json);
+  webSocket.sendTXT(json);
+  Serial.println("[WebSocket] ✅ Sent: " + json);
 }
