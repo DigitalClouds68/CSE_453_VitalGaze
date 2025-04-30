@@ -2,14 +2,17 @@ import React, { useCallback } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { WebView } from "react-native-webview";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { useRouter, useFocusEffect } from "expo-router";
+import { useRouter, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useDataContext } from "./contexts/DataContext";
 
-const WEBGL_URL = process.env.EXPO_PUBLIC_WEBGL_URL || "http://localhost:8080/index.html";
+const BASE_WEBGL_URL = process.env.EXPO_PUBLIC_WEBGL_URL || "http://localhost:8080/index.html";
 
 const UnityWebGLScreen = () => {
   const router = useRouter();
-  const { unityCoords, setUnityCoords, eyeData } = useDataContext(); // ❗ 同时获取 eyeData
+  const { mode } = useLocalSearchParams(); // 👈 从 training.tsx 读取传入的 mode
+  const finalURL = `${BASE_WEBGL_URL}?mode=${mode}`;
+
+  const { unityCoords, setUnityCoords, eyeData } = useDataContext();
 
   useFocusEffect(
     useCallback(() => {
@@ -22,19 +25,18 @@ const UnityWebGLScreen = () => {
 
   const handleMessageFromUnity = (event: { nativeEvent: { data: string } }) => {
     try {
-      console.log("📩 Raw event data from WebView:", event.nativeEvent.data);
       const msg = JSON.parse(event.nativeEvent.data);
 
       if (msg.type === "CLOSE_GAME") {
         router.push("/training");
         return;
       }
+
       if (!msg.data || !msg.data.worldPosition || !msg.data.screenPosition) {
         console.warn("⚠️ Invalid data structure received:", msg);
         return;
       }
 
-      // 存入全局
       setUnityCoords({
         world: {
           x: msg.data.worldPosition.x || 0,
@@ -51,13 +53,10 @@ const UnityWebGLScreen = () => {
     }
   };
 
-  // ===【1】计算误差距离 (在渲染阶段或 useMemo 中都行) ===
   let fitScorePercent = 0;
   if (eyeData) {
-    // 假设摄像头分辨率
     const cameraW = 320;
     const cameraH = 240;
-    // 假设 Unity 屏幕分辨率
     const unityW = 3200;
     const unityH = 2000;
 
@@ -67,20 +66,16 @@ const UnityWebGLScreen = () => {
     const dx = unityCoords.screen.x - mappedEyeX;
     const dy = unityCoords.screen.y - mappedEyeY;
     const dist = Math.sqrt(dx * dx + dy * dy);
+    const maxDist = Math.sqrt(unityW * unityW + unityH * unityH);
 
-    // 选用"屏幕对角线"当作 maxDist
-    const maxDist = Math.sqrt(unityW*unityW + unityH*unityH); 
-    // 计算分数
     let score = 1 - dist / maxDist;
-    if (score < 0) score = 0;   // 最低 0
-    if (score > 1) score = 1;   // 最高 1
-    fitScorePercent = score * 100;
+    fitScorePercent = Math.max(0, Math.min(1, score)) * 100;
   }
 
   return (
     <View style={{ flex: 1 }}>
       <WebView
-        source={{ uri: WEBGL_URL }}
+        source={{ uri: finalURL }}
         cacheEnabled={false}
         cacheMode="LOAD_NO_CACHE"
         style={{ flex: 1 }}
@@ -101,7 +96,6 @@ const UnityWebGLScreen = () => {
         onMessage={handleMessageFromUnity}
       />
 
-      {/* 显示来自 Unity 的坐标 + 拟合度 */}
       <View style={{
         position: "absolute",
         top: 20,
@@ -110,28 +104,23 @@ const UnityWebGLScreen = () => {
         padding: 10,
         borderRadius: 5
       }}>
-        {/* Unity 坐标 */}
-        <Text style={{ color: "white", fontSize: 14 }}>
+        <Text style={{ color: "white", fontSize: 8 }}>
           🌍 World: x: {unityCoords.world.x.toFixed(2)}, y: {unityCoords.world.y.toFixed(2)}, z: {unityCoords.world.z.toFixed(2)}
         </Text>
-        <Text style={{ color: "white", fontSize: 14 }}>
+        <Text style={{ color: "white", fontSize: 8 }}>
           📱 Screen: x: {unityCoords.screen.x.toFixed(2)}, y: {unityCoords.screen.y.toFixed(2)}
         </Text>
-
-        {/* 眼睛坐标 (raw) */}
         {eyeData ? (
-          <Text style={{ color: "white", fontSize: 14 }}>
+          <Text style={{ color: "white", fontSize: 8 }}>
             👁 Eye: x:{eyeData.x}, y:{eyeData.y}
           </Text>
         ) : (
-          <Text style={{ color: "white", fontSize: 14 }}>
+          <Text style={{ color: "white", fontSize: 8 }}>
             No Eye Data
           </Text>
         )}
-
-        {/* 映射后的拟合距离 */}
-        <Text style={{ color: "white", fontSize: 14 }}>
-        📐 FitScore: {fitScorePercent.toFixed(1)} %
+        <Text style={{ color: "white", fontSize: 8 }}>
+          📐 FitScore: {fitScorePercent.toFixed(1)} %
         </Text>
       </View>
     </View>

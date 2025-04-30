@@ -4,15 +4,17 @@
 extern void AIcam_setup();
 extern void AI_Detection();
 extern void initWiFi();
-extern void startWebSocketServer(); // WebSocket
+extern void initWebSocketClient();
+extern void updateWebSocketLoop(); // ✅ 新增！
 
 void setup() {
     Serial.begin(115200);
-    initWiFi();       // ✅ 初始化 WiFi
-    AIcam_setup();    // ✅ 初始化相机和模型
-    startWebSocketServer();  // ✅ 初始化WebSocket服务器
+    initWiFi();              // ✅ 初始化 WiFi
+    initWebSocketClient();   // ✅ 初始化 WebSocket Client（连接云端）
+    AIcam_setup();           // ✅ 初始化摄像头 + 模型
 }
 
 void loop() {
-    AI_Detection();   // ✅ 循环检测并发送数据
+    updateWebSocketLoop();   // ✅ 必须轮询保持连接
+    AI_Detection();          // ✅ 每帧推理并发送坐标
 }

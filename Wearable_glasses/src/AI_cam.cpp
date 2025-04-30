@@ -1,7 +1,11 @@
 #include <Arduino.h>
 #include "main.h"
 
-extern void broadcastEyeData(const String& jsonData);
+// extern void broadcastEyeData(const String& jsonData);
+#include <ArduinoWebsockets.h>
+using namespace websockets;
+
+extern WebsocketsClient webSocket;  // Use for communication with the cloud server
 
 /* Edge Impulse Arduino examples
  * Copyright (c) 2022 EdgeImpulse Inc.
@@ -198,11 +202,19 @@ void AI_Detection()
         // // this is the value to send to phone 
         // ei_printf("    %s (%f) [ x: %u, y: %u, width: %u, height: %u ]\n", bb.label, bb.value, bb.x, bb.y, bb.width, bb.height);
             
-        // // ✅ 发送给手机或前端
+        // // ✅ Send the bounding box coordinates to the cloud server
         // sendEyeData(bb.x, bb.y, bb.width, bb.height);
         String json = String("{\"x\":") + bb.x + ",\"y\":" + bb.y + ",\"w\":" + bb.width + ",\"h\":" + bb.height + "}";
 
-        broadcastEyeData(json);  // ✅ 广播数据给所有WebSocket客户端
+        // broadcastEyeData(json);  // ✅ Broadcast to all connected clients
+        
+        // ✅ Change to use WebSocket to send data to the render cloud server
+        if(webSocket.available()){
+            webSocket.send(json);
+            Serial.println("[WebSocket] ✅ Data sent to Render: " + json);
+        } else{
+            Serial.println("[WebSocket] ⚠️ WebSocket not connected!");
+        }
     }
     if (!bb_found) {
         ei_printf("    No objects found\n");
