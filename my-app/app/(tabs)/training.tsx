@@ -15,18 +15,23 @@ const TrainingScreen = () => {
 
   // Handle selecting a training mode
   const handleModeSelect = (mode: string) => {
-    setScore(0); // Clear previous score
-    setCurrentMode(''); // Clear previous mode
-
+    setScore(0);
+    setCurrentMode('');
+  
     setTimeout(() => {
-      setCurrentMode(mode); // Set new mode after delay
-      startTraining(mode); // Start training with the new mode
-      
-      // ✅ 跳转到 Unity WebGL 页面
-      router.push("/UnityWebGL");
-    
-    }, 500); // Small delay for visual transition
-  };
+      setCurrentMode(mode);
+      startTraining(mode);
+  
+      const getShortMode = (mode: string) => {
+        if (mode === 'Fixation Training') return 'Fixation';
+        if (mode === 'Saccadic Training') return 'Saccade';
+        if (mode === 'Pursuit Training')  return 'Pursuit';
+      };
+  
+      const shortMode = getShortMode(mode);
+      router.push(`/UnityWebGL?mode=${shortMode}`); // ✅ 拼接参数
+    }, 500);
+  };  
 
   return (
     <SafeAreaView style={styles.container}>
