@@ -23,17 +23,17 @@ const SettingsScreen = () => {
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>General</Text>
 
-        <TouchableOpacity style={styles.settingItem} onPress={() => router.push("/settings/bluetooth")}> {/* 👈 蓝牙连接页 */}
+        <TouchableOpacity style={styles.settingItem} onPress={() => router.push("/settingsPage/bluetooth")}>
           <MaterialIcons name="bluetooth" size={24} color="#1E567D" />
           <Text style={styles.settingText}>Device Management (Bluetooth)</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.settingItem} onPress={() => router.push("/settings/wifi")}> {/* 👈 新增 WiFi 设置项 */}
+        <TouchableOpacity style={styles.settingItem} onPress={() => router.push("/settingsPage/wifi")}>
           <MaterialIcons name="wifi" size={24} color="#1E567D" />
           <Text style={styles.settingText}>Device Management (Wi-Fi)</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.settingItem} onPress={() => router.push("/settings/analysis")}>
+        <TouchableOpacity style={styles.settingItem} onPress={() => router.push("/settingsPage/analysis")}>
           <MaterialIcons name="analytics" size={24} color="#1E567D" />
           <Text style={styles.settingText}>Data Analysis & Fitting</Text>
         </TouchableOpacity>

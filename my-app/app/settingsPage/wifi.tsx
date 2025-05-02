@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useDataContext } from "../contexts/DataContext";
+import { useDataContext } from "../../contexts/DataContext";
 
 //const WS_URL = "ws://172.20.10.3:8080/ws"; // ✅ Change this to your ESP32 WebSocket URL
 const WS_URL = "wss://vitalgaze-websocket-server.onrender.com";

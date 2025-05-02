@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator } from "react-native";
 import { WebView } from "react-native-webview";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useRouter, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useDataContext } from "./contexts/DataContext";
+import { useDataContext } from "../contexts/DataContext";
 
 const BASE_WEBGL_URL = process.env.EXPO_PUBLIC_WEBGL_URL || "http://localhost:8080/index.html";
 
@@ -28,7 +28,7 @@ const UnityWebGLScreen = () => {
       const msg = JSON.parse(event.nativeEvent.data);
 
       if (msg.type === "CLOSE_GAME") {
-        router.push("/training");
+        router.push("/trainingPage/training");
         return;
       }
 

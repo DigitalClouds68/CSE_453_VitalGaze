@@ -37,9 +37,12 @@ const TrainingScreen = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Back Button */}
-        <TouchableOpacity onPress={() => router.push("/home")} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.push("/")} style={styles.backButton}>
           <Ionicons name="arrow-back" size={30} color="#1E567D" />
         </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => router.push("/home")} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={30} color="#1E567D" />
+        </TouchableOpacity> */}
 
         {/* Mode Selection */}
         <View style={styles.modeSelectionContainer}>
