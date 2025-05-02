@@ -35,8 +35,21 @@ const WifiScreen = () => {
       };
   
       ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setEyeData(data);
+        const raw = event.data;
+      
+        // 忽略非 JSON 消息（比如 "o"、"ping"）
+        if (!raw || typeof raw !== 'string' || !raw.trim().startsWith('{')) {
+          console.warn("⚠️ Skipped non-JSON message:", raw);
+          return;
+        }
+      
+        try {
+          const data = JSON.parse(raw);
+          console.log("✅ Received eye data:", data);
+          setEyeData(data);
+        } catch (err) {
+          console.error("❌ JSON parse failed:", raw);
+        }
       };
   
       ws.onerror = () => {
