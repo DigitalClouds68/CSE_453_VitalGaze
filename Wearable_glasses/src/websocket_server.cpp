@@ -3,37 +3,37 @@
 // #include <ESPAsyncWebServer.h>
 // #include <AsyncTCP.h>
 
-// // WebSocket listening port
+// // WebSocket服务器监听端口
 // const uint16_t WS_PORT = 8080;
 
-// // WebServer instance
+// // WebServer 实例
 // AsyncWebServer server(WS_PORT);
-// AsyncWebSocket ws("/ws");  // WebSocket path: ws://ESP32-IP:8080/ws
+// AsyncWebSocket ws("/ws");  // WebSocket端点路径: ws://ESP32-IP:8080/ws
 
-// // Initialize WebSocket
+// // 初始化 WebSocket 服务
 // void initWebSocket() {
 //   ws.onEvent([](AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
 //                 void *arg, uint8_t *data, size_t len) {
 //     if (type == WS_EVT_CONNECT) {
-//       Serial.printf("🔌 WebSocket client connected!: id=%u\n", client->id());
+//       Serial.printf("🔌 WebSocket客户端连接成功: id=%u\n", client->id());
 //     } else if (type == WS_EVT_DISCONNECT) {
-//       Serial.printf("⚠️ WebSocket client disconnected: id=%u\n", client->id());
+//       Serial.printf("⚠️ WebSocket客户端断开: id=%u\n", client->id());
 //     } else if (type == WS_EVT_DATA) {
-//       // Receive data from client(not used in this case)
+//       // 收到数据（目前用不到）
 //     }
 //   });
 //   server.addHandler(&ws);
 // }
 
-// // Broadcast eye data to all connected clients
+// // 广播数据给所有连接的客户端
 // void broadcastEyeData(const String& jsonData) {
 //   ws.textAll(jsonData);
-//   Serial.println("[WebSocket] ✅ now is broadcasting data: " + jsonData);
+//   Serial.println("[WebSocket] ✅ 已广播数据: " + jsonData);
 // }
 
-// // Start WebSocket server
+// // 启动 WebSocket 服务器
 // void startWebSocketServer() {
 //   initWebSocket();
 //   server.begin();
-//   Serial.printf("[WebSocket] 🚀 Server start succeesfully, listening to port：%d\n", WS_PORT);
+//   Serial.printf("[WebSocket] 🚀 服务器启动成功，监听端口：%d\n", WS_PORT);
 // }
