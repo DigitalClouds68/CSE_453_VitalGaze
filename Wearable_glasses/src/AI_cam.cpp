@@ -5,7 +5,7 @@
 #include <ArduinoWebsockets.h>
 using namespace websockets;
 
-extern WebsocketsClient webSocket;  // Use for communication with the cloud server
+extern WebsocketsClient webSocket;  // 用于连接 Render 云端服务器
 
 /* Edge Impulse Arduino examples
  * Copyright (c) 2022 EdgeImpulse Inc.
@@ -155,15 +155,12 @@ static int ei_camera_get_data(size_t offset, size_t length, float *out_ptr)
 */
 void AI_Detection()
 {
-
-    // instead of wait_ms, we'll wait on the signal, this allows threads to cancel us...
     if (ei_sleep(1) != EI_IMPULSE_OK) {
         return;
     }
 
     snapshot_buf = (uint8_t*)malloc(EI_CAMERA_RAW_FRAME_BUFFER_COLS * EI_CAMERA_RAW_FRAME_BUFFER_ROWS * EI_CAMERA_FRAME_BYTE_SIZE);
 
-    // check if allocation was successful
     if(snapshot_buf == nullptr) {
         ei_printf("ERR: Failed to allocate snapshot buffer!\n");
         return;
@@ -179,7 +176,6 @@ void AI_Detection()
         return;
     }
 
-    // Run the classifier
     ei_impulse_result_t result = { 0 };
 
     EI_IMPULSE_ERROR err = run_classifier(&signal, &result, debug_nn);
@@ -188,51 +184,29 @@ void AI_Detection()
         return;
     }
 
-    // print the predictions
-    ei_printf("Predictions (DSP: %d ms., Classification: %d ms., Anomaly: %d ms.): \n",
-                result.timing.dsp, result.timing.classification, result.timing.anomaly);
-
 #if EI_CLASSIFIER_OBJECT_DETECTION == 1
     bool bb_found = result.bounding_boxes[0].value > 0;
     for (size_t ix = 0; ix < result.bounding_boxes_count; ix++) {
         auto bb = result.bounding_boxes[ix];
-        if (bb.value == 0) {
-            continue;
-        }
-        // // this is the value to send to phone 
-        // ei_printf("    %s (%f) [ x: %u, y: %u, width: %u, height: %u ]\n", bb.label, bb.value, bb.x, bb.y, bb.width, bb.height);
-            
-        // // ✅ Send the bounding box coordinates to the cloud server
-        // sendEyeData(bb.x, bb.y, bb.width, bb.height);
+        if (bb.value == 0) continue;
+
         String json = String("{\"x\":") + bb.x + ",\"y\":" + bb.y + ",\"w\":" + bb.width + ",\"h\":" + bb.height + "}";
 
-        // broadcastEyeData(json);  // ✅ Broadcast to all connected clients
-        
-        // ✅ Change to use WebSocket to send data to the render cloud server
-        if(webSocket.available()){
-            webSocket.send(json);
-            Serial.println("[WebSocket] ✅ Data sent to Render: " + json);
-        } else{
-            Serial.println("[WebSocket] ⚠️ WebSocket not connected!");
-        }
+        // ✅ 改为使用 WebSocket 客户端连接到 Render 云端
+        // if(webSocket.available()){
+        //     webSocket.send(json);
+        //     Serial.println("[WebSocket] ✅ Data sent to Render: " + json);
+        // }else{
+        //     Serial.println("[WebSocket] ⚠️ WebSocket not connected!");
+        // }
+        sendEyeData(bb.x, bb.y, bb.width, bb.height);  // ✅ 直接调用 wifi_comm.cpp 中的安全封装
     }
     if (!bb_found) {
         ei_printf("    No objects found\n");
     }
-#else
-    for (size_t ix = 0; ix < EI_CLASSIFIER_LABEL_COUNT; ix++) {
-        ei_printf("    %s: %.5f\n", result.classification[ix].label,
-                                    result.classification[ix].value);
-    }
 #endif
-
-#if EI_CLASSIFIER_HAS_ANOMALY == 1
-        ei_printf("    anomaly score: %.3f\n", result.anomaly);
-#endif
-
 
     free(snapshot_buf);
-
 }
 
 /**

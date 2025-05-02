@@ -1,33 +1,34 @@
-#include <WiFiManager.h>      // ← 新增
+#include <WiFi.h>
 #include <WebSocketsClient.h>
+
+// WiFi credentials
+const char* ssid = "UB_Devices";
+const char* password = "goubbulls";
 
 // WebSocket client实例
 WebSocketsClient webSocket;
 
-// 将 initWiFi() 改为用 WiFiManager
+// 初始化 WiFi
 void initWiFi() {
-  Serial.println("[WiFi] 启动 WiFiManager 配网...");
-  WiFiManager wm;
-  wm.setDebugOutput(true);
-  wm.setConfigPortalTimeout(180);                // 超时后走默认逻辑
-  // 如果要清除以前的配网记录：wm.resetSettings();
+  Serial.println("[WiFi] Connecting...");
+  WiFi.begin(ssid, password);
 
-  // autoConnect(热点 SSID, 热点密码)
-  if(!wm.autoConnect("VitalGaze-AP", "vital1234")) {
-    Serial.println("⚠️ 配网超时或失败，3秒后重启");
-    delay(3000);
-    ESP.restart();
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
   }
 
-  Serial.println("\n✅ WiFi 配网成功！");
-  Serial.print("[WiFi] IP = ");
+  Serial.println("\n[WiFi] Connected!");
+  Serial.print("[WiFi] IP: ");
   Serial.println(WiFi.localIP());
 }
 
-// 保留原有的 WebSocket 初始化
+// 初始化 WebSocket Client（连接到 Render 云服务器）
 void initWebSocketClient() {
+  // WebSocket client 连接到 Render Cloud Server
   webSocket.beginSSL("vitalgaze-websocket-server.onrender.com", 443, "/");  // 使用 WSS
-  webSocket.setReconnectInterval(3000);
+  webSocket.setReconnectInterval(3000); // 自动重连
+
   webSocket.onEvent([](WStype_t type, uint8_t *payload, size_t length) {
     if (type == WStype_CONNECTED) {
       Serial.println("✅ Connected to Render WebSocket!");
@@ -37,15 +38,14 @@ void initWebSocketClient() {
   });
 }
 
+// 循环中需要调用
 void updateWebSocketLoop() {
   webSocket.loop();
 }
 
+// ✅ 实际发送数据
 void sendEyeData(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
-  String json = String("{\"x\":") + x + 
-                ",\"y\":" + y + 
-                ",\"w\":" + w + 
-                ",\"h\":" + h + "}";
+  String json = String("{\"x\":") + x + ",\"y\":" + y + ",\"w\":" + w + ",\"h\":" + h + "}";
   webSocket.sendTXT(json);
   Serial.println("[WebSocket] ✅ Sent: " + json);
 }
