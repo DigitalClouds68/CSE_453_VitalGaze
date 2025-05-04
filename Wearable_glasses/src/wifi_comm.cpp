@@ -2,13 +2,14 @@
 #include <WebSocketsClient.h>
 
 // WiFi credentials
-const char* ssid = "UB_Devices";
-const char* password = "goubbulls";
+// Change it to your own WiFi credentials
+const char* ssid = "Cloud";
+const char* password = "00000000";
 
-// WebSocket client实例
+// WebSocket client
 WebSocketsClient webSocket;
 
-// 初始化 WiFi
+// Initialize WiFi
 void initWiFi() {
   Serial.println("[WiFi] Connecting...");
   WiFi.begin(ssid, password);
@@ -23,11 +24,11 @@ void initWiFi() {
   Serial.println(WiFi.localIP());
 }
 
-// 初始化 WebSocket Client（连接到 Render 云服务器）
+// Initialize WebSocket Client
 void initWebSocketClient() {
-  // WebSocket client 连接到 Render Cloud Server
-  webSocket.beginSSL("vitalgaze-websocket-server.onrender.com", 443, "/");  // 使用 WSS
-  webSocket.setReconnectInterval(3000); // 自动重连
+  // WebSocket client connect to Render Cloud Server
+  webSocket.beginSSL("vitalgaze-websocket-server.onrender.com", 443, "/");  // WSS
+  webSocket.setReconnectInterval(3000); // auto reconnect every 3 seconds if disconnected
 
   webSocket.onEvent([](WStype_t type, uint8_t *payload, size_t length) {
     if (type == WStype_CONNECTED) {
@@ -38,12 +39,12 @@ void initWebSocketClient() {
   });
 }
 
-// 循环中需要调用
+// Loop function to keep WebSocket connection alive
 void updateWebSocketLoop() {
   webSocket.loop();
 }
 
-// ✅ 实际发送数据
+// real-time send eye data to Render Cloud
 void sendEyeData(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
   String json = String("{\"x\":") + x + ",\"y\":" + y + ",\"w\":" + w + ",\"h\":" + h + "}";
   webSocket.sendTXT(json);

@@ -5,7 +5,7 @@
 #include <ArduinoWebsockets.h>
 using namespace websockets;
 
-extern WebsocketsClient webSocket;  // 用于连接 Render 云端服务器
+extern WebsocketsClient webSocket;  // Used to connect to Render Cloud
 
 /* Edge Impulse Arduino examples
  * Copyright (c) 2022 EdgeImpulse Inc.
@@ -192,14 +192,14 @@ void AI_Detection()
 
         String json = String("{\"x\":") + bb.x + ",\"y\":" + bb.y + ",\"w\":" + bb.width + ",\"h\":" + bb.height + "}";
 
-        // ✅ 改为使用 WebSocket 客户端连接到 Render 云端
+        // ✅ Change
         // if(webSocket.available()){
         //     webSocket.send(json);
         //     Serial.println("[WebSocket] ✅ Data sent to Render: " + json);
         // }else{
         //     Serial.println("[WebSocket] ⚠️ WebSocket not connected!");
         // }
-        sendEyeData(bb.x, bb.y, bb.width, bb.height);  // ✅ 直接调用 wifi_comm.cpp 中的安全封装
+        sendEyeData(bb.x, bb.y, bb.width, bb.height);  // ✅ wifi_comm.cpp safe
     }
     if (!bb_found) {
         ei_printf("    No objects found\n");
