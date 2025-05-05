@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useDataContext } from "../contexts/DataContext";
+import { useDataContext } from "../../contexts/DataContext";
 
 //const WS_URL = "ws://172.20.10.3:8080/ws"; // ✅ Change this to your ESP32 WebSocket URL
 const WS_URL = "wss://vitalgaze-websocket-server.onrender.com";
@@ -35,8 +35,21 @@ const WifiScreen = () => {
       };
   
       ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setEyeData(data);
+        const raw = event.data;
+      
+        // 忽略非 JSON 消息（比如 "o"、"ping"）
+        if (!raw || typeof raw !== 'string' || !raw.trim().startsWith('{')) {
+          console.warn("⚠️ Skipped non-JSON message:", raw);
+          return;
+        }
+      
+        try {
+          const data = JSON.parse(raw);
+          console.log("✅ Received eye data:", data);
+          setEyeData(data);
+        } catch (err) {
+          console.error("❌ JSON parse failed:", raw);
+        }
       };
   
       ws.onerror = () => {

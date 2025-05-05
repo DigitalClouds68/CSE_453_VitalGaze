@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useDataContext } from "../contexts/DataContext";
+import { useDataContext } from "../../contexts/DataContext";
 
 const AnalysisScreen = () => {
   const { eyeData, unityCoords } = useDataContext();

@@ -3,12 +3,16 @@ import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } fr
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
+import { useAIControl } from "@/contexts/AIControlContext";
+
 // Dummy functions for training modes
 const startTraining = (mode: string) => {
   console.log(`Training started for mode: ${mode}`);
 };
 
 const TrainingScreen = () => {
+  const { setAIEnabled } = useAIControl();
+
   const [currentMode, setCurrentMode] = useState<string>('');
   const [score, setScore] = useState<number>(0);
   const router = useRouter();
@@ -29,6 +33,8 @@ const TrainingScreen = () => {
       };
   
       const shortMode = getShortMode(mode);
+      
+      setAIEnabled(true); // 🟢 开启 AI 识别
       router.push(`/UnityWebGL?mode=${shortMode}`); // ✅ 拼接参数
     }, 500);
   };  
@@ -37,9 +43,12 @@ const TrainingScreen = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* Back Button */}
-        <TouchableOpacity onPress={() => router.push("/home")} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.push("/")} style={styles.backButton}>
           <Ionicons name="arrow-back" size={30} color="#1E567D" />
         </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => router.push("/home")} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={30} color="#1E567D" />
+        </TouchableOpacity> */}
 
         {/* Mode Selection */}
         <View style={styles.modeSelectionContainer}>

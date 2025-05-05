@@ -278,7 +278,7 @@ const HomePage = () => {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.push("/training")}
+        onPress={() => router.push("/mode")}
         activeOpacity={0.8}
       >
         <Icon name="play" size={20} color="#FFF" style={styles.buttonIcon} />

@@ -1,20 +1,27 @@
 #include <Arduino.h>
 #include "main.h"
 
+// 声明外部函数
 extern void AIcam_setup();
 extern void AI_Detection();
 extern void initWiFi();
 extern void initWebSocketClient();
-extern void updateWebSocketLoop(); // ✅ 新增！
+extern void updateWebSocketLoop();
+extern bool isAIEnabled(); // 新增
 
 void setup() {
-    Serial.begin(115200);
-    initWiFi();              // ✅ 初始化 WiFi
-    initWebSocketClient();   // ✅ 初始化 WebSocket Client（连接云端）
-    AIcam_setup();           // ✅ 初始化摄像头 + 模型
+  Serial.begin(115200);
+  initWiFi();
+  initWebSocketClient();
+  AIcam_setup();
 }
 
 void loop() {
-    updateWebSocketLoop();   // ✅ 必须轮询保持连接
-    AI_Detection();          // ✅ 每帧推理并发送坐标
+  updateWebSocketLoop();
+
+  if (isAIEnabled()) {
+    AI_Detection();
+  } else {
+    delay(50); // 节省 CPU 占用
+  }
 }
