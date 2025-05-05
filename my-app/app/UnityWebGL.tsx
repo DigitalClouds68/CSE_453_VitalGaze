@@ -5,9 +5,13 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import { useRouter, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useDataContext } from "../contexts/DataContext";
 
+import { useAIControl } from "@/contexts/AIControlContext";
+
 const BASE_WEBGL_URL = process.env.EXPO_PUBLIC_WEBGL_URL || "http://localhost:8080/index.html";
 
 const UnityWebGLScreen = () => {
+  const { setAIEnabled } = useAIControl();
+  
   const router = useRouter();
   const { mode } = useLocalSearchParams(); // 👈 从 training.tsx 读取传入的 mode
   const finalURL = `${BASE_WEBGL_URL}?mode=${mode}`;
@@ -28,6 +32,7 @@ const UnityWebGLScreen = () => {
       const msg = JSON.parse(event.nativeEvent.data);
 
       if (msg.type === "CLOSE_GAME") {
+        setAIEnabled(false); // 🔴 关闭 AI 识别
         router.push("/trainingPage/training");
         return;
       }

@@ -10,6 +10,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { DataProvider } from '../contexts/DataContext';
+import { AIControlProvider } from '../contexts/AIControlContext';
 import { useColorScheme } from '@/components/useColorScheme';
 
 // Keep router ErrorBoundary
@@ -59,21 +60,23 @@ export default function RootLayout() {
   }
 
   return (
-    <AppProviders>
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="UnityWebGL"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: 'modal' }}
-        />
-      </Stack>
-    </AppProviders>
+    <AIControlProvider>  
+      <AppProviders>
+        <Stack>
+          <Stack.Screen
+            name="(tabs)"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="UnityWebGL"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: 'modal' }}
+          />
+        </Stack>
+      </AppProviders>
+    </AIControlProvider>
   );
 }
