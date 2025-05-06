@@ -1,9 +1,18 @@
+// app/settingsPage/bluetooth.tsx
+
 import React, { useState } from "react";
 import {
-  View, Text, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  StyleSheet,
 } from "react-native";
-import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
+
+import BackButton from "@/components/BackButton";
+import SectionHeader from "@/components/SectionHeader";
 
 type Device = {
   id: string;
@@ -11,7 +20,6 @@ type Device = {
 };
 
 const BluetoothScreen = () => {
-  const router = useRouter();
   const [deviceConnected, setDeviceConnected] = useState<boolean>(false);
   const [connectedDevice, setConnectedDevice] = useState<string | null>(null);
   const [availableDevices, setAvailableDevices] = useState<Device[]>([]);
@@ -22,7 +30,7 @@ const BluetoothScreen = () => {
     setTimeout(() => {
       setAvailableDevices([
         { id: "1", name: "VitalGaze-001" },
-        { id: "2", name: "VitalGaze-002" }
+        { id: "2", name: "VitalGaze-002" },
       ]);
       setSearching(false);
     }, 2000);
@@ -41,12 +49,8 @@ const BluetoothScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* 返回按钮 */}
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={30} color="#1E567D" />
-      </TouchableOpacity>
-
-      <Text style={styles.header}>Device Management</Text>
+      <BackButton />
+      <SectionHeader title="Device Management (Bluetooth)" />
 
       <View style={styles.statusContainer}>
         {deviceConnected ? (
@@ -63,7 +67,11 @@ const BluetoothScreen = () => {
       </View>
 
       {!deviceConnected && (
-        <TouchableOpacity style={styles.searchButton} onPress={searchDevices} disabled={searching}>
+        <TouchableOpacity
+          style={styles.searchButton}
+          onPress={searchDevices}
+          disabled={searching}
+        >
           {searching ? (
             <ActivityIndicator size="small" color="white" />
           ) : (
@@ -95,50 +103,38 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#F5F5F5"
-  },
-  backButton: {
-    position: "absolute",
-    top: 40,
-    left: 20
-  },
-  header: {
-    marginTop: 90,
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#1E567D",
-    textAlign: "center"
+    backgroundColor: "#F5F5F5",
   },
   statusContainer: {
     marginTop: 30,
-    alignItems: "center"
+    alignItems: "center",
   },
   connectedBox: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#E8F5E9",
     padding: 10,
-    borderRadius: 10
+    borderRadius: 10,
   },
   connectedText: {
     marginLeft: 10,
     fontSize: 16,
     fontWeight: "bold",
-    color: "#4CAF50"
+    color: "#4CAF50",
   },
   disconnectButton: {
     marginLeft: 10,
     padding: 5,
     backgroundColor: "#FF5252",
-    borderRadius: 5
+    borderRadius: 5,
   },
   disconnectText: {
     color: "white",
-    fontSize: 14
+    fontSize: 14,
   },
   noDeviceText: {
     fontSize: 16,
-    color: "#9E9E9E"
+    color: "#9E9E9E",
   },
   searchButton: {
     marginTop: 20,
@@ -146,21 +142,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    alignSelf: "center"
+    alignSelf: "center",
   },
   searchButtonText: {
     color: "white",
     fontSize: 16,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   deviceList: {
-    marginTop: 30
+    marginTop: 30,
   },
   deviceListTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#888"
+    color: "#888",
   },
   deviceItem: {
     flexDirection: "row",
@@ -169,13 +165,13 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 10,
     borderRadius: 10,
-    elevation: 2
+    elevation: 2,
   },
   deviceName: {
     marginLeft: 10,
     fontSize: 16,
-    color: "#1E567D"
-  }
+    color: "#1E567D",
+  },
 });
 
 export default BluetoothScreen;

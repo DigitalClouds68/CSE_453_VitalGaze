@@ -5,97 +5,79 @@ import { useRouter } from 'expo-router';
 
 import { useAIControl } from "@/contexts/AIControlContext";
 
-// Dummy functions for training modes
 const startTraining = (mode: string) => {
   console.log(`Training started for mode: ${mode}`);
 };
 
 const TrainingScreen = () => {
   const { setAIEnabled } = useAIControl();
-
   const [currentMode, setCurrentMode] = useState<string>('');
   const [score, setScore] = useState<number>(0);
   const router = useRouter();
 
-  // Handle selecting a training mode
   const handleModeSelect = (mode: string) => {
     setScore(0);
     setCurrentMode('');
-  
+
     setTimeout(() => {
       setCurrentMode(mode);
       startTraining(mode);
-  
+
       const getShortMode = (mode: string) => {
         if (mode === 'Fixation Training') return 'Fixation';
         if (mode === 'Saccadic Training') return 'Saccade';
-        if (mode === 'Pursuit Training')  return 'Pursuit';
+        if (mode === 'Pursuit Training') return 'Pursuit';
       };
-  
+
       const shortMode = getShortMode(mode);
-      
-      setAIEnabled(true); // 🟢 开启 AI 识别
-      router.push(`/UnityWebGL?mode=${shortMode}`); // ✅ 拼接参数
+      setAIEnabled(true);
+      router.push(`/UnityWebGL?mode=${shortMode}`);
     }, 500);
-  };  
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Back Button */}
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => router.push("/")} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={30} color="#1E567D" />
+          <Ionicons name="arrow-back" size={28} color="#1E567D" />
         </TouchableOpacity>
-        {/* <TouchableOpacity onPress={() => router.push("/home")} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={30} color="#1E567D" />
-        </TouchableOpacity> */}
+        <Text style={styles.headerText}>Training Modes</Text>
+      </View>
 
-        {/* Mode Selection */}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.modeSelectionContainer}>
-          <Text style={styles.header}>Choose Your Training Mode</Text>
-          
-          {/* Fixation Training Card */}
-          <TouchableOpacity 
-            style={styles.card} 
-            onPress={() => handleModeSelect('Fixation Training')}
-          >
+          {/* Fixation */}
+          <TouchableOpacity style={styles.card} onPress={() => handleModeSelect('Fixation Training')}>
             <Text style={styles.cardTitle}>Fixation Training</Text>
-            <Text style={styles.cardDescription} numberOfLines={3}>
+            <Text style={styles.cardDescription}>
               Train your eyes to maintain focus on a fixed point, improving stability and reducing eye strain.
             </Text>
           </TouchableOpacity>
 
-          {/* Saccadic Training Card */}
-          <TouchableOpacity 
-            style={styles.card} 
-            onPress={() => handleModeSelect('Saccadic Training')}
-          >
+          {/* Saccadic */}
+          <TouchableOpacity style={styles.card} onPress={() => handleModeSelect('Saccadic Training')}>
             <Text style={styles.cardTitle}>Saccadic Training</Text>
-            <Text style={styles.cardDescription} numberOfLines={3}>
+            <Text style={styles.cardDescription}>
               Exercise rapid eye movements between targets to improve reading speed and visual processing.
             </Text>
           </TouchableOpacity>
 
-          {/* Pursuit Training Card */}
-          <TouchableOpacity 
-            style={styles.card} 
-            onPress={() => handleModeSelect('Pursuit Training')}
-          >
+          {/* Pursuit */}
+          <TouchableOpacity style={styles.card} onPress={() => handleModeSelect('Pursuit Training')}>
             <Text style={styles.cardTitle}>Pursuit Training</Text>
-            <Text style={styles.cardDescription} numberOfLines={3}>
+            <Text style={styles.cardDescription}>
               Practice smoothly following moving objects to enhance coordination and tracking ability.
             </Text>
           </TouchableOpacity>
 
-          {/* Display Score */}
-          {currentMode && (
+          {/* Score / History */}
+          {currentMode ? (
             <View style={styles.scoreContainer}>
               <Text style={styles.scoreText}>Current Score: {score}</Text>
             </View>
+          ) : (
+            <Text style={styles.historyMessage}>No training history yet.</Text>
           )}
-
-          {/* No training history message */}
-          {currentMode === '' && <Text style={styles.historyMessage}>No training history yet.</Text>}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -103,34 +85,35 @@ const TrainingScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 10,
     backgroundColor: '#f1f8ff',
   },
-  scrollContainer: {
-    paddingBottom: 20,
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    paddingBottom: 0,
   },
   backButton: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    zIndex: 1,
+    marginRight: 10,
+  },
+  headerText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#1E567D',
+  },
+  scrollContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 30,
   },
   modeSelectionContainer: {
-    marginTop: 50,
+    marginTop: 20,
     alignItems: 'center',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#1E567D',
   },
   card: {
     backgroundColor: '#ffffff',
-    width: '90%',
+    width: '100%',
     padding: 20,
     marginVertical: 10,
     borderRadius: 10,
@@ -157,7 +140,7 @@ const styles = StyleSheet.create({
   scoreText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#28a745', // Green color for positive feedback
+    color: '#28a745',
   },
   historyMessage: {
     marginTop: 20,

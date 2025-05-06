@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-app",
-    "slug": "my-app",
+    "name": "VitalGaze",
+    "slug": "VitalGaze",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -13,7 +13,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.clouds68.myapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSBluetoothAlwaysUsageDescription": "VitalGaze uses Bluetooth to connect to your eye-tracking device.",
+        "NSBluetoothPeripheralUsageDescription": "VitalGaze uses Bluetooth to connect to your eye-tracking device."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -29,15 +35,21 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-screen-orientation"
+      "expo-screen-orientation",
+      "react-native-ble-plx"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "newArchEnabled": true,
-
     "extra": {
-      "API_URL": "https://cse-453-vitalgaze.onrender.com"
+      "API_URL": "https://cse-453-vitalgaze.onrender.com",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d1741e8b-ae9b-4802-b810-aa1aa94b6bd9"
+      }
     }
   }
 }
