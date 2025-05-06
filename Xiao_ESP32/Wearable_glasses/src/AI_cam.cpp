@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "project.h"
 
 /* Edge Impulse Arduino examples
  * Copyright (c) 2022 EdgeImpulse Inc.
@@ -146,7 +147,7 @@ static int ei_camera_get_data(size_t offset, size_t length, float *out_ptr)
 *
 * @param[in]  debug  Get debug info if true
 */
-void AI_Detection()
+void AIcam_detect()
 {
 
     // instead of wait_ms, we'll wait on the signal, this allows threads to cancel us...
