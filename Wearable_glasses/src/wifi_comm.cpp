@@ -5,9 +5,9 @@ const char* ssid = "Cloud";
 const char* password = "00000000";
 
 WebSocketsClient webSocket;
-bool aiEnabled = false; // 🔄 控制 AI 是否启用
+bool aiEnabled = false; // To control AI detection status
 
-// 初始化 WiFi
+// Initialize WiFi
 void initWiFi() {
   Serial.println("[WiFi] Connecting...");
   WiFi.begin(ssid, password);
@@ -22,7 +22,7 @@ void initWiFi() {
   Serial.println(WiFi.localIP());
 }
 
-// 初始化 WebSocket 客户端
+// Initialize WebSocket client
 void initWebSocketClient() {
   webSocket.beginSSL("vitalgaze-websocket-server.onrender.com", 443, "/");
   webSocket.setReconnectInterval(3000);
@@ -36,7 +36,7 @@ void initWebSocketClient() {
       String msg = String((char*)payload).substring(0, length);
       Serial.println("[WebSocket] 📩 Received: " + msg);
 
-      // 处理控制指令
+      // Handle control commands
       if (msg == "START_AI") {
         aiEnabled = true;
         Serial.println("🟢 AI Detection ENABLED");
@@ -48,21 +48,21 @@ void initWebSocketClient() {
   });
 }
 
-// 保持连接
+// Keep connection alive
 void updateWebSocketLoop() {
   webSocket.loop();
 }
 
-// 向服务端发送眼动数据
+// Send eye data to WebSocket server
 void sendEyeData(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
-  if (!aiEnabled) return; // ❌ 未启用时不发送数据
+  if (!aiEnabled) return; // ❌ If AI is disabled, do not send data
 
   String json = String("{\"x\":") + x + ",\"y\":" + y + ",\"w\":" + w + ",\"h\":" + h + "}";
   webSocket.sendTXT(json);
   Serial.println("[WebSocket] ✅ Sent: " + json);
 }
 
-// 暴露 aiEnabled 变量
+// Expose aiEnabled status to other files
 bool isAIEnabled() {
   return aiEnabled;
 }
