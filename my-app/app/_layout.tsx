@@ -72,6 +72,14 @@ export default function RootLayout() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="settingsPage"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="trainingPage"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="modal"
             options={{ presentation: 'modal' }}
           />

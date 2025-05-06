@@ -10,7 +10,7 @@ const StartPage: React.FC = () => {
       {/* Logo and Device Name Section */}
       <View style={{ alignItems: 'center', marginBottom: 40 }}>
         <Image
-          source={require('./image.png')} // 确保图片路径正确
+          source={require('./image.png')}
           style={{ width: 120, height: 120, marginBottom: 20 }}
         />
         <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#1E567D' }}>VitalGaze</Text>

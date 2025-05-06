@@ -13,8 +13,8 @@ type UnityCoords = {
 };
 
 type DataContextProps = {
-  eyeData: EyeData | null;       // 来自ESP32
-  unityCoords: UnityCoords;      // 来自Unity WebGL
+  eyeData: EyeData | null;       // From ESP32
+  unityCoords: UnityCoords;      // From Unity WebGL
   setUnityCoords: React.Dispatch<React.SetStateAction<UnityCoords>>;
   setEyeData: React.Dispatch<React.SetStateAction<EyeData | null>>;
 };
@@ -22,10 +22,10 @@ type DataContextProps = {
 const DataContext = createContext<DataContextProps | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 全局存储 ESP32 眼动数据
+  // Store ESP32 eye data in global state
   const [eyeData, setEyeData] = useState<EyeData | null>(null);
 
-  // 全局存储 Unity 坐标
+  // Store Unity coordinates in global state
   const [unityCoords, setUnityCoords] = useState<UnityCoords>({
     world: { x: 0, y: 0, z: 0 },
     screen: { x: 0, y: 0 },
@@ -38,7 +38,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// 方便使用的自定义hook
+// hook that can be customized to use the context
 export const useDataContext = () => {
   const context = useContext(DataContext);
   if (!context) {

@@ -13,7 +13,7 @@ const UnityWebGLScreen = () => {
   const { setAIEnabled } = useAIControl();
   
   const router = useRouter();
-  const { mode } = useLocalSearchParams(); // 👈 从 training.tsx 读取传入的 mode
+  const { mode } = useLocalSearchParams(); // 👈 Read the mode sent from training.tsx
   const finalURL = `${BASE_WEBGL_URL}?mode=${mode}`;
 
   const { unityCoords, setUnityCoords, eyeData } = useDataContext();
@@ -32,7 +32,7 @@ const UnityWebGLScreen = () => {
       const msg = JSON.parse(event.nativeEvent.data);
 
       if (msg.type === "CLOSE_GAME") {
-        setAIEnabled(false); // 🔴 关闭 AI 识别
+        setAIEnabled(false); // 🔴 Turn AI Detection Off
         router.push("/trainingPage/training");
         return;
       }

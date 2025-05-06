@@ -1,37 +1,23 @@
+// components/Header.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONT, SPACING } from '../theme';
+import { View, Text, StyleSheet } from 'react-native';
 
-type Props = { title: string; showBack?: boolean };
-
-export function Header({ title, showBack = false }: Props) {
-  const router = useRouter();
-  return (
-    <View style={styles.container}>
-      {showBack && (
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
-        </TouchableOpacity>
-      )}
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
-}
+const Header = ({ title }: { title: string }) => (
+  <View style={styles.container}>
+    <Text style={styles.title}>{title}</Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    marginTop: 100,
     alignItems: 'center',
-    padding: SPACING.md,
-    backgroundColor: COLORS.cardBg,
   },
   title: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: FONT.title,
-    fontWeight: '700',
-    color: COLORS.primary,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1E567D',
   },
 });
+
+export default Header;
