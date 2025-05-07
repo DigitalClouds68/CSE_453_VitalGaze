@@ -1,7 +1,7 @@
 #include <FastLED.h>
 #include "project.h"
 
-#define RAINBOW_SPEED 5  // smaller = faster
+#define RAINBOW_SPEED 1  // smaller = faster
 
 // Define the array of leds
 CRGB ledsLeft[NUM_LEDS];
@@ -14,6 +14,8 @@ void LED_setup() {
   FastLED.addLeds<WS2812B, LEFT_LED_PIN, RGB>(ledsLeft, NUM_LEDS);
   FastLED.addLeds<WS2812B, RIGHT_LED_PIN, RGB>(ledsRight, NUM_LEDS);
   FastLED.clear();
+  FastLED.clearData();
+  FastLED.show();
 }
 
 void LED_off() {
@@ -42,7 +44,35 @@ void LED_modeReader() {
   }
 }
 
-// Turn off LEDs for SLEEP mode
-void LED_modeSleep() {
-  LED_off();
+
+void LED_clockwise() {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    // Clear previous LEDs
+    fill_solid(ledsLeft, NUM_LEDS, CRGB::Black);
+    fill_solid(ledsRight, NUM_LEDS, CRGB::Black);
+
+    // Light up the current LED
+    ledsLeft[i] = CRGB::Yellow;
+    ledsRight[i] = CRGB::Yellow;
+
+    // Show on both rings
+    FastLED.show();
+    delay(100);  // Adjust speed here
+  }
+}
+
+void LED_counterclockwise(){
+  for (int i = NUM_LEDS - 1; i >= 0; i--) {
+    // Clear previous LEDs
+    fill_solid(ledsLeft, NUM_LEDS, CRGB::Black);
+    fill_solid(ledsRight, NUM_LEDS, CRGB::Black);
+
+    // Light up the current LED
+    ledsLeft[i] = CRGB::Yellow;
+    ledsRight[i] = CRGB::Yellow;
+
+    // Show on both rings
+    FastLED.show();
+    delay(100);  // Adjust speed here
+  }
 }
