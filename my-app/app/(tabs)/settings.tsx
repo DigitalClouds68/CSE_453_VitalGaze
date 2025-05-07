@@ -98,7 +98,7 @@ const SettingsScreen = () => {
             {connected ? "Connected" : "Disconnected"}
           </Text>
           {"\n"}
-          {connected ? " Ready to get eye data!" : "Please connect your device."}
+          {connected ? "        Ready to get eye data!" : "Waiting for WebSocket Connection......"}
         </Text>
       </View>
 

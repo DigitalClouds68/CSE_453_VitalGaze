@@ -1,11 +1,10 @@
 {
   "expo": {
     "name": "VitalGaze",
-    "slug": "VitalGaze",
+    "slug": "vitalgaze",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "icon": "./assets/images/VitalGaze.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -13,8 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.clouds68.vitalgaze",
       "supportsTablet": true,
-      "bundleIdentifier": "com.clouds68.myapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSBluetoothAlwaysUsageDescription": "VitalGaze uses Bluetooth to connect to your eye-tracking device.",
@@ -22,10 +21,16 @@
       }
     },
     "android": {
+      "package": "com.clouds68.vitalgaze",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -42,13 +47,13 @@
       "typedRoutes": true
     },
     "newArchEnabled": true,
+    "owner": "clouds68",
     "extra": {
-      "API_URL": "https://cse-453-vitalgaze.onrender.com",
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": "d1741e8b-ae9b-4802-b810-aa1aa94b6bd9"
+        "projectId": "11a3c1ea-d781-4667-b3f9-bac40342cf22"
       }
     }
   }

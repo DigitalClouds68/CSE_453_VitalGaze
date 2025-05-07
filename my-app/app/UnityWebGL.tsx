@@ -103,28 +103,28 @@ const UnityWebGLScreen = () => {
 
       <View style={{
         position: "absolute",
-        top: 20,
-        left: 20,
+        top: 15,
+        left: 15,
         backgroundColor: "rgba(0,0,0,0.5)",
         padding: 10,
         borderRadius: 5
       }}>
-        <Text style={{ color: "white", fontSize: 8 }}>
+        <Text style={{ color: "white", fontSize: 6 }}>
           🌍 World: x: {unityCoords.world.x.toFixed(2)}, y: {unityCoords.world.y.toFixed(2)}, z: {unityCoords.world.z.toFixed(2)}
         </Text>
-        <Text style={{ color: "white", fontSize: 8 }}>
+        <Text style={{ color: "white", fontSize: 6 }}>
           📱 Screen: x: {unityCoords.screen.x.toFixed(2)}, y: {unityCoords.screen.y.toFixed(2)}
         </Text>
         {eyeData ? (
-          <Text style={{ color: "white", fontSize: 8 }}>
+          <Text style={{ color: "white", fontSize: 6 }}>
             👁 Eye: x:{eyeData.x}, y:{eyeData.y}
           </Text>
         ) : (
-          <Text style={{ color: "white", fontSize: 8 }}>
+          <Text style={{ color: "white", fontSize: 6 }}>
             No Eye Data
           </Text>
         )}
-        <Text style={{ color: "white", fontSize: 8 }}>
+        <Text style={{ color: "white", fontSize: 6 }}>
           📐 FitScore: {fitScorePercent.toFixed(1)} %
         </Text>
       </View>

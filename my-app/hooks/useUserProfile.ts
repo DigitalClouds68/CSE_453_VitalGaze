@@ -89,7 +89,7 @@ export function useHomeData() {
         if ((err as Error).message === 'NO_TOKEN') {
           router.push('/(tabs)/signin');
         } else {
-          // 网络或其他错误，尝试本地缓存
+          // Network error or other errors
           const local = await AsyncStorage.getItem('username');
           if (local) isMounted && setUsername(local);
           else router.push('/(tabs)/signin');
