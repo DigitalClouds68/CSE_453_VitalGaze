@@ -22,7 +22,6 @@ function TabBarIcon({ name, color, focused }: TabBarIconProps) {
   const scale = useSharedValue(1);
 
   useEffect(() => {
-    // spring animation when focused changes
     scale.value = withSpring(focused ? 1.2 : 1, { stiffness: 200, damping: 12 });
   }, [focused]);
 
@@ -31,12 +30,9 @@ function TabBarIcon({ name, color, focused }: TabBarIconProps) {
   }));
 
   return (
-    <AnimatedIcon
-      name={name}
-      size={28}
-      color={color}
-      style={[styles.icon, animatedStyle]}
-    />
+    <Animated.View style={animatedStyle}>
+      <FontAwesome name={name} size={28} color={color} style={styles.icon} />
+    </Animated.View>
   );
 }
 

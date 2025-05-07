@@ -13,26 +13,23 @@ type UnityCoords = {
 };
 
 type DataContextProps = {
-  eyeData: EyeData | null;       // From ESP32
-  unityCoords: UnityCoords;      // From Unity WebGL
+  eyeData: EyeData | null;
+  unityCoords: UnityCoords;
+  ledAngle: number;
   setUnityCoords: React.Dispatch<React.SetStateAction<UnityCoords>>;
   setEyeData: React.Dispatch<React.SetStateAction<EyeData | null>>;
+  setLedAngle: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Store ESP32 eye data in global state
   const [eyeData, setEyeData] = useState<EyeData | null>(null);
-
-  // Store Unity coordinates in global state
-  const [unityCoords, setUnityCoords] = useState<UnityCoords>({
-    world: { x: 0, y: 0, z: 0 },
-    screen: { x: 0, y: 0 },
-  });
+  const [unityCoords, setUnityCoords] = useState<UnityCoords>({ world: { x: 0, y: 0, z: 0 }, screen: { x: 0, y: 0 } });
+  const [ledAngle, setLedAngle] = useState<number>(0); // 👈 新增 LED 角度状态
 
   return (
-    <DataContext.Provider value={{ eyeData, setEyeData, unityCoords, setUnityCoords }}>
+    <DataContext.Provider value={{ eyeData, setEyeData, unityCoords, setUnityCoords, ledAngle, setLedAngle }}>
       {children}
     </DataContext.Provider>
   );

@@ -23,6 +23,8 @@ export const AIControlProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
+    globalThis.esp32Socket = ws;
+
     ws.onopen = () => {
       console.log("✅ WebSocket connected (AIControlContext)");
       setIsConnected(true);
