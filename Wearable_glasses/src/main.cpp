@@ -6,15 +6,17 @@ extern void AI_Detection();
 extern void initWiFi();
 extern void initWebSocketClient();
 extern void updateWebSocketLoop();
-extern void initBLE();
+//extern void initBLE();
 extern bool isAIEnabled();
+extern void LED_setup();
 
 void setup() {
   Serial.begin(115200);
-//   initWiFi();
-//   initWebSocketClient();
+  initWiFi();
+  initWebSocketClient();
   AIcam_setup();
-  initBLE();
+  //initBLE();
+  LED_setup(); 
 }
 
 void loop() {
