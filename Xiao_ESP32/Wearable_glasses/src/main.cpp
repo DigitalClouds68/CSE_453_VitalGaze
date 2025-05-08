@@ -1,11 +1,12 @@
 #include <Arduino.h>
 #include "project.h"
 
-void setup() {
-    Sensor_setup();
+
+void setup() { 
+    LED_setup();
 }
 
-void loop() {
-    Serial.println(get_distance_mm());
+void loop() { 
+  // Turn the LED on, then pause
+  LED_modeOnline();
 }
-

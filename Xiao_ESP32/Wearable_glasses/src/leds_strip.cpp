@@ -14,7 +14,6 @@ void LED_setup() {
   FastLED.addLeds<WS2812B, LEFT_LED_PIN, RGB>(ledsLeft, NUM_LEDS);
   FastLED.addLeds<WS2812B, RIGHT_LED_PIN, RGB>(ledsRight, NUM_LEDS);
   FastLED.clear();
-  FastLED.clearData();
   FastLED.show();
 }
 

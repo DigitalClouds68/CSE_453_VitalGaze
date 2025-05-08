@@ -1,35 +1,42 @@
 #include <Adafruit_SSD1306.h>
-#include "project.h"
+#include "project.h"  // 确保这个头文件有 Mode 的定义等
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
+
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 void Display_setup() {
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("Display ready");
     display.display();
+    delay(5000);
 }
 
 void drawStatusBar() {
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+
+    display.setCursor(0, 0);
+    display.print("100%");
+
+    display.setCursor(60, 0);
+    display.print("12:00");
+
     display.setCursor(100, 0);
     display.print("WiFi");
-    display.setCursor(0, 0);
-    display.print("100%"); // Fake battery
-    display.setCursor(60, 0);
-    display.print("12:00"); // Fake time
+    display.display();
 }
 
 void Display_showHome(Mode mode) {
-    display.clearDisplay();
-    drawStatusBar();
-    display.setCursor(0, 16);
-    display.print("Mode: ");
-    if (mode == ONLINE) display.print("ONLINE");
-    else if (mode == SLEEP) display.print("SLEEP");
-    else display.print("OFFLINE");
-    display.display();
+    display.clearDisplay();      // 清空上次内容
+    display.setTextSize(1);
+    drawStatusBar();             // 显示状态栏
 }
+
 
 void Display_blinkMode(Mode mode) {
     static unsigned long lastToggle = 0;
