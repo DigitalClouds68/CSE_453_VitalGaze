@@ -84,7 +84,7 @@ const LEDConfigScreen = () => {
       <ScrollView contentContainerStyle={styles.container}>
         {/* 返回按钮 */}
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={28} color="#00BFFF" />
+          <Ionicons name="arrow-back" size={28} color="#1E567D" />
         </TouchableOpacity>
 
         <Text style={styles.title}>LED Training Config</Text>

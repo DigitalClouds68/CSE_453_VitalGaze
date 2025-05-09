@@ -50,7 +50,7 @@ const BluetoothScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <BackButton />
-      <SectionHeader title="Device Management (Bluetooth)" />
+      <SectionHeader title="Bluetooth" />
 
       <View style={styles.statusContainer}>
         {deviceConnected ? (

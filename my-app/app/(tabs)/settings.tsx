@@ -111,7 +111,7 @@ const SettingsScreen = () => {
           onPress={() => router.push("/settingsPage/bluetooth")}
         >
           <MaterialIcons name="bluetooth" size={24} color="#1E567D" />
-          <Text style={styles.settingText}>Device Management (Bluetooth)</Text>
+          <Text style={styles.settingText}>Bluetooth Management</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -119,7 +119,7 @@ const SettingsScreen = () => {
           onPress={() => router.push("/settingsPage/wifi")}
         >
           <MaterialIcons name="wifi" size={24} color="#1E567D" />
-          <Text style={styles.settingText}>Device Management (Wi-Fi)</Text>
+          <Text style={styles.settingText}>Wi-Fi Management</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -127,7 +127,7 @@ const SettingsScreen = () => {
           onPress={() => router.push("/settingsPage/analysis")}
         >
           <MaterialIcons name="analytics" size={24} color="#1E567D" />
-          <Text style={styles.settingText}>Data Analysis & Fitting</Text>
+          <Text style={styles.settingText}>Data Fitting Condition</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

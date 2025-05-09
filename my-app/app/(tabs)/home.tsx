@@ -26,7 +26,7 @@ const HomePage = () => {
 
         if (!token) {
           console.log("No auth token found, redirecting to signin");
-          router.push('/(tabs)/signin');
+          router.push('/signinup/signin');
           return;
         }
 
@@ -47,7 +47,7 @@ const HomePage = () => {
             await AsyncStorage.setItem("username", data.user.username);
           } else {
             console.log("Invalid user data received");
-            router.push('/(tabs)/signin');
+            router.push('/signinup/signin');
           }
         } else {
           console.log("Failed to fetch user profile, status:", response.status);
@@ -56,7 +56,7 @@ const HomePage = () => {
             await handleTokenExpired();
           } else {
             Alert.alert("Error", "Failed to fetch user information.");
-            router.push('/(tabs)/signin');
+            router.push('/signinup/signin');
           }
         }
       } catch (error) {
@@ -70,11 +70,11 @@ const HomePage = () => {
             setUsername(localUsername);
             console.log("Local username fetched:", localUsername);
           } else {
-            router.push('/(tabs)/signin');
+            router.push('/signinup/signin');
           }
         } catch (storageError) {
           console.error("Error reading from storage:", storageError);
-          router.push('/(tabs)/signin');
+          router.push('/signinup/signin');
         }
       } finally {
         setIsLoading(false);
@@ -107,7 +107,7 @@ const HomePage = () => {
     Alert.alert(
       "Session Expired",
       "Your session has expired. Please sign in again.",
-      [{ text: "OK", onPress: () => router.push('/(tabs)/signin') }]
+      [{ text: "OK", onPress: () => router.push('/signinup/signin') }]
     );
   };
 
@@ -176,7 +176,7 @@ const HomePage = () => {
               console.log("Menu closed after sign out");
               
               // 跳转到登录页面
-              router.push('/(tabs)/signin');
+              router.push('/signinup/signin');
             } catch (error) {
               console.error("Error during sign out:", error);
               Alert.alert("Error", "Failed to sign out completely. Please try again.");
