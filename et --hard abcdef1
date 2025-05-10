@@ -1,0 +1,155 @@
+[33m41df4da2a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdiyun[m[33m, [m[1;31morigin/diyun[m[33m)[m changed
+[33m3cbe9473b[m Just Just
+[33mb7397a496[m before prebuilt2.00000
+[33medbe37e27[m before prebuilt
+[33m94f07ca07[m Delete some unuseful...
+[33m1dc3d5ee7[m newwwwwwww
+[33mb4b318865[m LED, etc.
+[33me18066929[m ble(comming soon)
+[33mb1c9ca231[m updated
+[33m0fc1f7852[m Unnecessary 'web_server' file
+[33m715a72a0e[m Updated...
+[33m0ca2a6ea5[m Updatedgit add .!
+[33m4b7f445a7[m Updated
+[33m00bad0466[m random updated
+[33m7a136698e[m updated...
+[33m61fc8033e[m New
+[33m6d9db3d16[m WIFI2.0
+[33me67f6d487[m WIFI1.0
+[33mc3d90f2c4[m Updated sth simple
+[33m296ffeb76[m Updated firmware(Server related logic)
+[33m0c06318f1[m WebGL/Wifi(ESP32 WEBSOCKET) deployment
+[33mab33e65fb[m demo4.0
+[33m106aea515[m after fix
+[33mf4a2c3b9d[m pull error
+[33mba5f6e7bd[m Ready to demo2.0
+[33m5ddee328a[m Merge branch 'main' of https://github.com/DigitalClouds68/CSE_453_VitalGaze into diyun
+[33m84e7fe368[m ready to demo
+[33mc10c8def7[m 重大更新2.0
+[33mdb6ef7c28[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m everything reconnect
+[33m9e4f13a75[m Merge branch 'main' of https://github.com/DigitalClouds68/CSE_453_VitalGaze into diyun
+[33mdb452527b[m deploy backend
+[33m4e6f3f776[m 重大变化
+[33m4e8f9fc38[m wifi小改
+[33me3e188ba7[m update for test
+[33m6c9a13390[m deploy backend console
+[33m639374aa5[m connect test
+[33mde50e664a[m 1:56pm
+[33m3ef7c14e0[m 1:53pm
+[33m6c5343d30[m Update package-lock.json
+[33m1ad61a9e9[m Delete package.json
+[33me30b89ef0[m Update package.json
+[33mb222260c4[m update start command
+[33mba2db82ab[m Update .env
+[33m6b5c4fd35[m[33m ([m[1;31morigin/Yingyi[m[33m, [m[1;32mYingyi[m[33m)[m dependencies update
+[33m5ce724875[m Update webgl interaction logic（现在是通过 training 页面选择模式打开webgl page，删除 home page的多余按钮）; 3/24/2025
+[33m5540dee54[m UnityWEBGL; LAYOUT;ETC.....
+[33mdc6ddd702[m Homepage update
+[33m0eb9b6b7c[m Homepage update
+[33m48a0c2284[m revise back
+[33m5bebbf29f[m Merge pull request #6 from DigitalClouds68/diyun
+[33m85d3fec20[m random push
+[33maa90d6339[m After pull from main（分界点）
+[33me768f02d5[m I will check
+[33md39166b64[m Implement dynamic profile update page
+[33m809186829[m Fix Email Update Logic in User Profile
+[33mb4912c463[m Fix password encryption issue in changePassword controller
+[33m5d63a1fe6[m Fix getProfile function to return actual user data from database
+[33m3347e1a5c[m Refactor authentication routes and improve signup/login functionality
+[33m2d135a47e[m I hate frontend
+[33mf8a789329[m Remember this time
+[33m5daa3ff75[m Kepp Updated
+[33m99c9f382e[m Just Random Update?! Long time have not updated
+[33m6b8a3a3cc[m just merge
+[33m511a12f2f[m backend code update
+[33m7440eed74[m Update some scripts and sth(still cant work for WEBGL(自由切换横竖屏))
+[33mdc58ac0d3[m Merge branch 'main' of https://github.com/DigitalClouds68/CSE_453_VitalGaze
+[33mb2f5085cf[m Back structure update
+[33m5adafbf19[m Merge pull request #5 from DigitalClouds68/yunze
+[33m374e1f1ec[m Update platformio.ini
+[33m225773e88[m feat: Add .env support for WebGL URL management fix: Remove expo-env and use process.env for Expo refactor: Update UnityWebGLScreen.tsx to auto-load WebGL URL chore: Improve Expo startup to load .env correctly docs: Add setup instructions for Cloudflare Tunnel
+[33mff09749ed[m Add Unity WebGL...
+[33m3c5b18ec4[m Merge branch 'main' of https://github.com/DigitalClouds68/CSE_453_VitalGaze into diyun
+[33m47c84595d[m update training page
+[33mf0f673aaf[m merge
+[33mb0a747393[m training page update
+[33m535304209[m Merge pull request #3 from DigitalClouds68/main
+[33mef6926f2a[m create profile page and improve setting page
+[33md657af1e8[m version module, 'signup' file modification
+[33mddaf1d274[m Email verification file & node bluetooth stuff
+[33m558a790f8[m Just Branch
+[33m8f5e91967[m Just Branch
+[33m28698fb16[m tarining page update
+[33m1bb5e92f0[m few update on homepage
+[33m011fb2291[m update frontend design style
+[33mcc607ed5a[m update backend pw creation and connect with signin frontend
+[33m906c569e7[m signup connect
+[33mf8b72a979[m Update README.md
+[33m3ac472caa[m Update README.md
+[33m752b32c55[m Update README.md
+[33m74614ac56[m Update comments
+[33m8dbc2aedb[m Update .env
+[33m779087230[m Frontend code update
+[33me3dd46b7c[m Update User.js
+[33mb383a37a9[m Update README.md
+[33m118f3d53e[m Update websocketServer.js
+[33m3be96ba25[m Update .env
+[33ma35303910[m Update .env
+[33m8714b3af7[m Merge branch 'main' of https://github.com/DigitalClouds68/CSE_453_VitalGaze
+[33m8943afdd3[m Move .env from Server_BackEnd/ to my-app/
+[33m59b192724[m Delete Documents directory
+[33m22d25739b[m Merge branch 'main' of https://github.com/DigitalClouds68/CSE_453_VitalGaze
+[33m3b0b61190[m Upload the backend(server) file for user SignUp/Login
+[33m0d7077751[m Update README.md
+[33m5bb8aeaee[m Upload the backend(server) file for user SignUp/Login
+[33mf93dfc1df[m Delete Circuit_Schematics_Design directory
+[33m1036f4884[m Update AI_cam.cpp
+[33mcfd38b1e2[m Function name error
+[33m15df73c9a[m update
+[33me1acea7d3[m Delete The_VitalGaze_VR_GAMES directory
+[33mf4d70e5c6[m Keep Updating
+[33m9f2da185d[m Merge branch 'main' of https://github.com/DigitalClouds68/CSE_453_VitalGaze
+[33mf850e3fb6[m Update Logic...
+[33me679d74dc[m Update README.md
+[33m1a187e6f4[m Merge pull request #10 from jmlamann/VR_GAME_PROGRESS
+[33m94cc93b4c[m Update the workflow logic for VRgames
+[33m85b4adf1b[m Merge pull request #9 from jmlamann/VR_GAME_PROGRESS
+[33m1ffc9a809[m Merge branch 'VR_GAME_PROGRESS' of https://github.com/jmlamann/CSE450-VitalGaze into VR_GAME_PROGRESS
+[33mca604e7bd[m Add Circuit Schematics Design folder with placeholder file
+[33mc077bb4cd[m Merge pull request #8 from jmlamann/revert-7-revert-6-VR_GAME_PROGRESS
+[33m25095299e[m Revert "Revert "Merge pull request #5 from jmlamann/main""
+[33ma67897283[m Merge pull request #7 from jmlamann/revert-6-VR_GAME_PROGRESS
+[33m3dbe89d5b[m Revert "Merge pull request #5 from jmlamann/main"
+[33md0123b435[m Merge pull request #6 from jmlamann/VR_GAME_PROGRESS
+[33mdbcedf6f5[m Merge pull request #5 from jmlamann/main
+[33m338166a55[m Add circuit schematic design folder
+[33m772c26446[m Update README.md
+[33m811350fd5[m Merge pull request #4 from jmlamann/VR_GAME_PROGRESS
+[33m3285dbdd1[m Move PDF files to 'Documents'
+[33m2893bf276[m Merge pull request #3 from jmlamann/VR_GAME_PROGRESS
+[33m3eab2b563[m Re-add Unity VR Game project and .gitignore to VR_GAME_PROGESSS branch
+[33m2ca64ba59[m Re-add unity VR Game project
+[33m14d9197a8[m Rename Progress Report 1(9_25 ~ 10_11)_ VitalGaze.pdf to Progress Report 1.pdf
+[33mac34af3f2[m Rename Progress report 2.pdf to Progress Report 2.pdf
+[33m9d45496c4[m Merge pull request #2 from jmlamann/fix_Frontend
+[33ma48a1ef65[m Delete .gitignore
+[33m2099b47a0[m Delete VR_3D_GAMES/VitalGaze_3D_Games directory
+[33m83f33c827[m Delete VR_3D_GAMES/VitalGaze_3D_Games directory
+[33m12a150f68[m Delete .gitignore
+[33ma36b522b8[m Merge pull request #1 from jmlamann/fix_Frontend
+[33m808d6ee24[m Update package-lock.json
+[33m242292a26[m 更新 .gitignore 文件，忽略 node_modules
+[33m585b16035[m Update MW_Movement.cs
+[33mad6c550e9[m code update
+[33m06903520a[m update frontend
+[33ma862b6868[m Merge branch 'main' of https://github.com/jmlamann/CSE450-VitalGaze
+[33mcb84aaee8[m Update .DS_Store
+[33mea9b066d3[m Create README.md
+[33m96d2e7a9c[m Update .gitignore
+[33m4c60db5a9[m Previous Progress Report.
+[33m320219253[m frontend
+[33m5fe277a5e[m Basic App Frontend Code
+[33mf44dba236[m random testing
+[33mf1ce02ab1[m Delete Testing
+[33m772068362[m Testing
+[33m30c3a4743[m Save Proposal
