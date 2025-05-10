@@ -3,14 +3,14 @@ import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } fr
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-import { useAIControl } from "@/contexts/AIControlContext";
+import { useSocket } from "@/contexts/SocketContext";
 
 const startTraining = (mode: string) => {
   console.log(`Training started for mode: ${mode}`);
 };
 
 const TrainingScreen = () => {
-  const { setAIEnabled } = useAIControl();
+  const { sendAICommand } = useSocket();
   const [currentMode, setCurrentMode] = useState<string>('');
   const [score, setScore] = useState<number>(0);
   const router = useRouter();
@@ -30,7 +30,7 @@ const TrainingScreen = () => {
       };
 
       const shortMode = getShortMode(mode);
-      setAIEnabled(true);
+      sendAICommand("START_AI");
       router.push(`/UnityWebGL?mode=${shortMode}`);
     }, 500);
   };

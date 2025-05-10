@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DataProvider } from '../contexts/DataContext';
 import { SocketProvider } from '../contexts/SocketContext';
 import { useColorScheme } from '@/components/useColorScheme';
+import { AIControlProvider } from '@/contexts/AIControlContext';
 
 // Keep router ErrorBoundary
 export { ErrorBoundary } from 'expo-router';
@@ -60,35 +61,37 @@ export default function RootLayout() {
   }
 
   return (
-    <SocketProvider>  
-      <AppProviders>
-        <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="UnityWebGL"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="settingsPage"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="trainingPage"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="signinup"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: 'modal' }}
-          />
-        </Stack>
-      </AppProviders>
+    <SocketProvider>
+      <AIControlProvider>  
+        <AppProviders>
+          <Stack>
+            <Stack.Screen
+              name="(tabs)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="UnityWebGL"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="settingsPage"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="trainingPage"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="signinup"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="modal"
+              options={{ presentation: 'modal' }}
+            />
+          </Stack>
+        </AppProviders>
+      </AIControlProvider>
     </SocketProvider>
   );
 }
