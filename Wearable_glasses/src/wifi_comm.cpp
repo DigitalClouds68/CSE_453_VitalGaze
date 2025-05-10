@@ -3,15 +3,12 @@
 #include <ArduinoJson.h>
 #include "project.h"
 
-const char* ssid = "VitalGaze";
-const char* password = "00000000";
-
 WebSocketsClient webSocket;
 bool aiEnabled = false; // Control AI detection state
 
 void initWiFi() {
   Serial.println("[WiFi] Connecting...");
-  WiFi.begin(ssid, password);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
