@@ -52,7 +52,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Auth',
+          title: 'Start',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name="rocket" color={color} focused={focused} />
           ),

@@ -10,7 +10,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { DataProvider } from '../contexts/DataContext';
-import { AIControlProvider } from '../contexts/AIControlContext';
+import { SocketProvider } from '../contexts/SocketContext';
 import { useColorScheme } from '@/components/useColorScheme';
 
 // Keep router ErrorBoundary
@@ -60,7 +60,7 @@ export default function RootLayout() {
   }
 
   return (
-    <AIControlProvider>  
+    <SocketProvider>  
       <AppProviders>
         <Stack>
           <Stack.Screen
@@ -80,11 +80,15 @@ export default function RootLayout() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="signinup"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="modal"
             options={{ presentation: 'modal' }}
           />
         </Stack>
       </AppProviders>
-    </AIControlProvider>
+    </SocketProvider>
   );
 }
