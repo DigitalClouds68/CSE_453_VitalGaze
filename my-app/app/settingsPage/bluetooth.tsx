@@ -20,10 +20,10 @@ type Device = {
 };
 
 const BluetoothScreen = () => {
-  const [deviceConnected, setDeviceConnected] = useState<boolean>(false);
+  const [deviceConnected, setDeviceConnected] = useState(false);
   const [connectedDevice, setConnectedDevice] = useState<string | null>(null);
   const [availableDevices, setAvailableDevices] = useState<Device[]>([]);
-  const [searching, setSearching] = useState<boolean>(false);
+  const [searching, setSearching] = useState(false);
 
   const searchDevices = () => {
     setSearching(true);
@@ -36,7 +36,7 @@ const BluetoothScreen = () => {
     }, 2000);
   };
 
-  const connectToDevice = (device: Device): void => {
+  const connectToDevice = (device: Device) => {
     setDeviceConnected(true);
     setConnectedDevice(device.name);
     setAvailableDevices([]);
@@ -51,6 +51,11 @@ const BluetoothScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <BackButton />
       <SectionHeader title="Bluetooth" />
+
+      {/* 🚧 开发中提示 */}
+      <View style={styles.noticeBanner}>
+        <Text style={styles.noticeText}>🚧 Some Bluetooth features are still under development.</Text>
+      </View>
 
       <View style={styles.statusContainer}>
         {deviceConnected ? (
@@ -104,6 +109,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: "#F5F5F5",
+  },
+  noticeBanner: {
+    padding: 10,
+    marginTop: 10,
+    backgroundColor: "#FFF3CD",
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#FFEeba",
+  },
+  noticeText: {
+    fontSize: 14,
+    color: "#856404",
+    textAlign: "center",
   },
   statusContainer: {
     marginTop: 30,

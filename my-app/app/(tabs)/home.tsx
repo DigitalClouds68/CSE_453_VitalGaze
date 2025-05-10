@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from "expo-constants";
+import { StatusBar } from "react-native";
 
 // API Base URL (fallback if environment variable is missing)
 const API_BASE_URL =  "https://cse-453-vitalgaze.onrender.com";
