@@ -28,7 +28,7 @@ export function useHomeData() {
     Alert.alert(
       'Session Expired',
       'Your session has expired. Please sign in again.',
-      [{ text: 'OK', onPress: () => router.push('/(tabs)/signin') }]
+      [{ text: 'OK', onPress: () => router.push('/signinup/signin') }]
     );
   }, [clearAllUserData, router]);
 
@@ -53,7 +53,7 @@ export function useHomeData() {
           }
           await clearAllUserData();
           setMenuVisible(false);
-          router.push('/(tabs)/signin');
+          router.push('/signinup/signin');
         }
       }
     ]);
@@ -87,12 +87,12 @@ export function useHomeData() {
         if (raw) isMounted && setLastSession(JSON.parse(raw));
       } catch (err) {
         if ((err as Error).message === 'NO_TOKEN') {
-          router.push('/(tabs)/signin');
+          router.push('/signinup/signin');
         } else {
           // Network error or other errors
           const local = await AsyncStorage.getItem('username');
           if (local) isMounted && setUsername(local);
-          else router.push('/(tabs)/signin');
+          else router.push('/signinup/signin');
         }
       } finally {
         isMounted && setLoading(false);

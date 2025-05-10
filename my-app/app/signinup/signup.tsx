@@ -63,7 +63,7 @@ const SignUpPage: React.FC = () => {
       if (response.ok) {
         console.log("Signup successful! Redirecting to Sign In page...");
         Alert.alert("Success", "User registered successfully!");
-        router.push("/(tabs)/signin");
+        router.push("/signinup/signin");
       } else {
         console.log("Signup failed. Server response:", data);
         Alert.alert("Error", data.error || "Signup failed");
@@ -80,7 +80,7 @@ const SignUpPage: React.FC = () => {
       <TouchableOpacity onPress={() => router.replace("/")} style={{ position: "absolute", top: 40, left: 20 }}>
         <Ionicons name="arrow-back" size={30} color="#1E567D" />
       </TouchableOpacity>
-
+s
       {/* Logo & 标题 */}
       <View style={{ alignItems: "center", marginBottom: 40 }}>
         <Text style={{ fontSize: 40, fontWeight: "bold", color: "#1E567D" }}>VitalGaze</Text>

@@ -39,7 +39,7 @@ export default function ProfilePage() {
       const token = await AsyncStorage.getItem('authToken');
       if (!token) {
         Alert.alert('Session Expired', 'Please sign in again to continue');
-        router.push('/signin');
+        router.push('/signinup/signin');
         return null;
       }
       return token;
@@ -264,7 +264,7 @@ export default function ProfilePage() {
     >
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/home')} style={styles.backButton}>
+          <TouchableOpacity onPress={() => router.push('/home')} style={styles.backButton}>
             <Ionicons name="arrow-back" size={30} color="#1E567D" />
           </TouchableOpacity>
           <Text style={styles.title}>My Profile</Text>
