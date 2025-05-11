@@ -1,17 +1,21 @@
+// authMiddleware.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const authMiddleware = (req, res, next) => {
+module.exports = async (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) return res.status(401).json({ error: '未提供身份认证令牌' });
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
 
+    const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { userId: decoded.userId };
+    // 把用户 ID 放到 req.user.id（不要用 userId）
+    req.user = { id: decoded.id };
     next();
-  } catch (error) {
-    res.status(401).json({ error: '无效或过期的身份认证令牌' });
+  } catch (err) {
+    console.error('Auth error:', err);
+    res.status(401).json({ message: 'Unauthorized' });
   }
 };
-
-module.exports = authMiddleware;

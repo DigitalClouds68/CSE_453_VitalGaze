@@ -1,198 +1,113 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+  ScrollView,
+  StatusBar
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from "expo-constants";
-import { StatusBar } from "react-native";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// API Base URL (fallback if environment variable is missing)
-const API_BASE_URL =  "https://cse-453-vitalgaze-1.onrender.com";
+const API_BASE_URL = "https://cse-453-vitalgaze-1.onrender.com";
 
 const HomePage = () => {
   const [menuVisible, setMenuVisible] = useState(false);
-  const [username, setUsername] = useState("");
-  const [lastSession, setLastSession] = useState(null);
+  const [username, setUsername] = useState("Guest");
   const [isLoading, setIsLoading] = useState(true);
+  const [trainingStats, setTrainingStats] = useState<{
+    total: number;
+    last: { trainingType: string; duration: number } | null;
+  }>({ total: 0, last: null });
   const router = useRouter();
 
-  // 获取用户信息
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
-      console.log("Starting to fetch user data...");
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        router.push("/signinup/signin");
+        return;
+      }
+
+      // 1. 获取用户资料
       try {
-        const token = await AsyncStorage.getItem("authToken");
-        console.log("Auth Token:", token);
-
-        if (!token) {
-          console.log("No auth token found, redirecting to signin");
-          router.push('/signinup/signin');
-          return;
-        }
-
-        const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
+        const resUser = await fetch(`${API_BASE_URL}/api/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("User data received:", data);
-
-          if (data && data.user.username) {
-            setUsername(data.user.username);
-            // 可选：保存用户名到AsyncStorage以便离线使用
-            await AsyncStorage.setItem("username", data.user.username);
-          } else {
-            console.log("Invalid user data received");
-            router.push('/signinup/signin');
-          }
-        } else {
-          console.log("Failed to fetch user profile, status:", response.status);
-          // 如果获取用户资料失败，可能是token过期
-          if (response.status === 401) {
-            await handleTokenExpired();
-          } else {
-            Alert.alert("Error", "Failed to fetch user information.");
-            router.push('/signinup/signin');
-          }
+        if (resUser.ok) {
+          const { user } = await resUser.json();
+          setUsername(user.username);
+          await AsyncStorage.setItem("username", user.username);
+        } else if (resUser.status === 401) {
+          throw new Error("unauthorized");
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        Alert.alert("Network Error", "Unable to connect to the server.");
-        
-        // 尝试从本地存储获取用户名作为后备方案
-        try {
-          const localUsername = await AsyncStorage.getItem("username");
-          if (localUsername) {
-            setUsername(localUsername);
-            console.log("Local username fetched:", localUsername);
-          } else {
-            router.push('/signinup/signin');
-          }
-        } catch (storageError) {
-          console.error("Error reading from storage:", storageError);
-          router.push('/signinup/signin');
+      } catch (err) {
+        // token 过期或网络错误
+        await AsyncStorage.clear();
+        router.push("/signinup/signin");
+        return;
+      }
+
+      // 2. 获取训练统计
+      try {
+        const resTrain = await fetch(`${API_BASE_URL}/api/training`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (resTrain.ok) {
+          const { data } = await resTrain.json();
+          const sessions = Array.isArray(data) ? data : [];
+          setTrainingStats({
+            total: sessions.length,
+            last:
+              sessions.length > 0
+                ? {
+                    trainingType: sessions[0].trainingType,
+                    duration: sessions[0].duration,
+                  }
+                : null,
+          });
         }
+      } catch (err) {
+        console.error("Fetch training stats failed:", err);
       } finally {
         setIsLoading(false);
-        console.log("User data fetch complete.");
       }
     };
 
-    // 获取上次训练数据
-    const fetchLastSession = async () => {
-      try {
-        const lastSessionData = await AsyncStorage.getItem("lastTrainingSession");
-        console.log("Last session data:", lastSessionData);
-        
-        if (lastSessionData) {
-          setLastSession(JSON.parse(lastSessionData));
-        }
-      } catch (error) {
-        console.error("Error fetching session data:", error);
-      }
-    };
-
-    fetchUserData();
-    fetchLastSession();
+    fetchData();
   }, []);
 
-  // 处理Token过期情况
-  const handleTokenExpired = async () => {
-    console.log("Token expired, clearing user data...");
-    await clearAllUserData();
-    Alert.alert(
-      "Session Expired",
-      "Your session has expired. Please sign in again.",
-      [{ text: "OK", onPress: () => router.push('/signinup/signin') }]
-    );
-  };
-
-  // 清除所有用户相关数据
-  const clearAllUserData = async () => {
-    try {
-      // 创建一个包含所有需要删除的键的数组
-      const keysToRemove = [
-        "authToken", 
-        "userData",
-        "userPreferences",
-        "lastTrainingSession",
-        "username"
-        // 添加其他需要在登出时清除的数据
-      ];
-      
-      // 一次性删除所有键
-      await AsyncStorage.multiRemove(keysToRemove);
-      
-      // 清除内存中的状态
-      setUsername("");
-      setLastSession(null);
-      
-      console.log("All user data cleared successfully");
-    } catch (error) {
-      console.error("Error clearing user data:", error);
-    }
-  };
-
-  // 增强的登出处理
   const handleSignOut = async () => {
-    console.log("Sign out initiated...");
-    Alert.alert(
-      "Sign Out", 
-      "Are you sure you want to sign out?", 
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Sign Out",
-          onPress: async () => {
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Sign Out",
+        onPress: async () => {
+          const token = await AsyncStorage.getItem("authToken");
+          if (token) {
             try {
-              const token = await AsyncStorage.getItem("authToken");
-              console.log("Token on sign out:", token);
-              
-              // 尝试在服务器端也使token失效（如果API支持）
-              if (token) {
-                try {
-                  await fetch(`${API_BASE_URL}/api/auth/logout`, {
-                    method: "POST",
-                    headers: {
-                      "Authorization": `Bearer ${token}`,
-                      "Content-Type": "application/json"
-                    }
-                  });
-                  // 即使服务器请求失败，我们也继续本地登出流程
-                } catch (serverError) {
-                  console.error("Server logout failed, continuing with local logout:", serverError);
-                }
-              }
-              
-              // 清除所有用户数据
-              await clearAllUserData();
-              
-              // 关闭菜单
-              setMenuVisible(false);
-              console.log("Menu closed after sign out");
-              
-              // 跳转到登录页面
-              router.push('/signinup/signin');
-            } catch (error) {
-              console.error("Error during sign out:", error);
-              Alert.alert("Error", "Failed to sign out completely. Please try again.");
-            }
-          },
+              await fetch(`${API_BASE_URL}/api/auth/logout`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+              });
+            } catch {}
+          }
+          await AsyncStorage.clear();
+          setUsername("Guest");
+          router.push("/signinup/signin");
         },
-      ]
-    );
+      },
+    ]);
   };
 
-
-  // 如果正在加载数据，可以显示加载指示器
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
+      <View style={styles.loadingContainer}>
+        <StatusBar barStyle="dark-content" backgroundColor="#F4F7F9" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
@@ -200,40 +115,52 @@ const HomePage = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F7F9" />
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.welcomeText}>VitalGaze</Text>
-        <TouchableOpacity onPress={() => setMenuVisible(!menuVisible)} style={styles.menuButton}>
+        <TouchableOpacity
+          onPress={() => setMenuVisible(!menuVisible)}
+          style={styles.menuButton}
+        >
           <Icon name="menu" size={30} color="#1E567D" />
         </TouchableOpacity>
       </View>
 
-      {/* 菜单弹出层 */}
+      {/* Menu */}
       {menuVisible && (
         <View style={styles.menu}>
-          <View style={styles.menuHeader}>
-            <Text style={styles.menuHeaderText}>{username || "Guest"}</Text>
-          </View>
-          <TouchableOpacity style={styles.menuItemContainer} onPress={() => {
-            setMenuVisible(false);
-            router.push("/profile");
-          }}>
-            <Icon name="person-outline" size={22} color="#1E567D" />
+          <TouchableOpacity
+            style={styles.menuItemContainer}
+            onPress={() => {
+              setMenuVisible(false);
+              router.push("/profile");
+            }}
+          >
+            <Icon name="person-outline" size={20} color="#1E567D" />
             <Text style={styles.menuItem}>Profile</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItemContainer} onPress={() => {
-            setMenuVisible(false);
-            router.push("/settings");
-          }}>
-            <Icon name="settings-outline" size={22} color="#1E567D" />
+          <TouchableOpacity
+            style={styles.menuItemContainer}
+            onPress={() => {
+              setMenuVisible(false);
+              router.push("/settings");
+            }}
+          >
+            <Icon name="settings-outline" size={20} color="#1E567D" />
             <Text style={styles.menuItem}>Settings</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItemContainer} onPress={handleSignOut}>
-            <Icon name="log-out-outline" size={22} color="#1E567D" />
+          <TouchableOpacity
+            style={styles.menuItemContainer}
+            onPress={handleSignOut}
+          >
+            <Icon name="log-out-outline" size={20} color="#1E567D" />
             <Text style={styles.menuItem}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       )}
 
+      {/* Greeting */}
       <View style={styles.greetingContainer}>
         <Text style={styles.personalizedGreeting}>
           Hello, {username || "Guest"}!
@@ -241,46 +168,32 @@ const HomePage = () => {
         <Text style={styles.subtitle}>Track your eye health and progress</Text>
       </View>
 
+      {/* Stats */}
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
-          <View style={styles.iconContainer}>
-            <Icon name="fitness-outline" size={24} color="#1E567D" />
-          </View>
+          <Icon name="fitness-outline" size={24} color="#1E567D" />
           <Text style={styles.statTitle}>Exercises</Text>
-          <Text style={styles.statValue}>20</Text>
+          <Text style={styles.statValue}>{trainingStats.total}</Text>
           <Text style={styles.statSubtext}>completed</Text>
         </View>
-        
+
         <View style={styles.statCard}>
-          <View style={styles.iconContainer}>
-            <Icon name="time-outline" size={24} color="#1E567D" />
-          </View>
+          <Icon name="time-outline" size={24} color="#1E567D" />
           <Text style={styles.statTitle}>Last Session</Text>
-          <Text style={styles.statSubtext}>15 mins duration</Text>
+          <Text style={styles.statSubtext}>
+            {trainingStats.last
+              ? `${Math.round(trainingStats.last.duration / 60000)} mins · ${
+                  trainingStats.last.trainingType
+                }`
+              : "No session"}
+          </Text>
         </View>
       </View>
 
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Icon name="calendar-outline" size={22} color="#1E567D" />
-          <Text style={styles.cardTitle}>Upcoming Session</Text>
-        </View>
-        <View style={styles.upcomingSession}>
-          <View style={styles.sessionTime}>
-            <Text style={styles.timeText}>3:00</Text>
-            <Text style={styles.timePeriod}>PM</Text>
-          </View>
-          <View style={styles.sessionDetails}>
-            <Text style={styles.sessionTitle}>Eye Relaxation Training</Text>
-            <Text style={styles.sessionSubtitle}>15 minutes · Focus exercises</Text>
-          </View>
-        </View>
-      </View>
-
+      {/* Start Button */}
       <TouchableOpacity
         style={styles.button}
         onPress={() => router.push("/mode")}
-        activeOpacity={0.8}
       >
         <Icon name="play" size={20} color="#FFF" style={styles.buttonIcon} />
         <Text style={styles.buttonText}>Start Training</Text>
@@ -292,12 +205,15 @@ const HomePage = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 0,
     backgroundColor: "#F4F7F9",
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F4F7F9",
   },
   loadingText: {
     fontSize: 18,
@@ -307,10 +223,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 20,
     paddingTop: 50,
-    paddingBottom: 15,
     backgroundColor: "#FFF",
   },
   welcomeText: {
@@ -322,55 +235,31 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   menu: {
-    position: "absolute",
-    top: 95,
-    right: 10,
     backgroundColor: "#fff",
-    borderRadius: 12,
-    width: 220,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
-    zIndex: 20,
-    overflow: "hidden",
-  },
-  menuHeader: {
-    backgroundColor: "#F0F6FA",
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E5E5",
-  },
-  menuHeaderText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#1E567D",
+    borderRadius: 10,
+    marginTop: 10,
+    paddingVertical: 10,
+    elevation: 3,
   },
   menuItemContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
   },
   menuItem: {
+    marginLeft: 12,
     fontSize: 16,
     color: "#333",
-    marginLeft: 12,
   },
   greetingContainer: {
-    width: "100%",
     alignItems: "center",
-    paddingVertical: 25,
-    paddingHorizontal: 20,
+    marginVertical: 25,
   },
   personalizedGreeting: {
     fontSize: 26,
     fontWeight: "600",
     color: "#333",
-    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
@@ -380,102 +269,29 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginBottom: 20,
-    width: "100%",
+    marginBottom: 25,
   },
   statCard: {
+    width: "48%",
     backgroundColor: "#fff",
     borderRadius: 15,
     padding: 15,
-    width: "48%",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
     elevation: 2,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#ECF5FB",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
   },
   statTitle: {
     fontSize: 14,
     color: "#666",
-    marginBottom: 5,
+    marginTop: 8,
   },
   statValue: {
     fontSize: 22,
     fontWeight: "bold",
     color: "#333",
+    marginVertical: 4,
   },
   statSubtext: {
     fontSize: 12,
-    color: "#888",
-    marginTop: 2,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    padding: 18,
-    marginHorizontal: 20,
-    marginBottom: 25,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-    marginLeft: 8,
-  },
-  upcomingSession: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  sessionTime: {
-    backgroundColor: "#ECF5FB",
-    borderRadius: 10,
-    padding: 12,
-    alignItems: "center",
-    minWidth: 65,
-  },
-  timeText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1E567D",
-  },
-  timePeriod: {
-    fontSize: 12,
-    color: "#1E567D",
-    marginTop: 2,
-  },
-  sessionDetails: {
-    marginLeft: 15,
-    flex: 1,
-  },
-  sessionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 3,
-  },
-  sessionSubtitle: {
-    fontSize: 13,
     color: "#888",
   },
   button: {
@@ -484,15 +300,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 16,
-    marginVertical: 10,
-    marginHorizontal: 20,
     borderRadius: 12,
   },
   buttonIcon: {
     marginRight: 8,
   },
   buttonText: {
-    color: "#fff",
+    color: "#FFF",
     fontSize: 18,
     fontWeight: "600",
   },

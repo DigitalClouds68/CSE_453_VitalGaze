@@ -13,6 +13,9 @@ import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useSocket } from '@/contexts/SocketContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const API_BASE_URL = "https://cse-453-vitalgaze-1.onrender.com";
 
 const LEDConfigScreen: React.FC = () => {
   const router = useRouter();
@@ -42,16 +45,17 @@ const LEDConfigScreen: React.FC = () => {
 
     // 自动停止和解锁
     setTimeout(() => {
-      stopLED(); // 自动调用停止函数，含解锁逻辑
+      stopLED(); // 自动调用停止函数，含解锁逻辑和上传逻辑
     }, duration * 1000);
 
     setTimeout(() => setIsSending(false), 800);
   };
 
-  const stopLED = () => {
+  const stopLED = async () => {
     sendAICommand('STOP_AI');
     sendPayload({ mode: 'IDLE' });
     setConfigLocked(false);
+    await uploadTrainingData();  // 👈 上传训练数据
   };
 
   const calculateMatchScore = () => {
@@ -60,6 +64,41 @@ const LEDConfigScreen: React.FC = () => {
     let diff = Math.abs(eyeAngle - ledAngle);
     if (diff > 180) diff = 360 - diff;
     return 1 - diff / 180;
+  };
+
+  const uploadTrainingData = async () => {
+    const token = await AsyncStorage.getItem("authToken");
+    if (!token) return;
+
+    const score = calculateMatchScore();
+    const data = {
+      trainingType: "LED",
+      direction,
+      speed,
+      duration: Math.round(duration * 1000),
+      score: Math.round(score * 100),
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/training`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        console.log("✅ Training data uploaded:", result);
+        await AsyncStorage.setItem("lastTrainingSession", JSON.stringify(data));
+      } else {
+        console.warn("⚠️ Upload failed:", result.message || "Unknown error");
+      }
+    } catch (error) {
+      console.error("❌ Upload error:", error);
+    }
   };
 
   return (
@@ -85,15 +124,13 @@ const LEDConfigScreen: React.FC = () => {
           Match Score: {(calculateMatchScore() * 100).toFixed(1)}%
         </Text>
 
+        {/* Direction */}
         <Text style={styles.label}>Direction</Text>
         <View style={styles.buttonGroup}>
           {['CW', 'CCW'].map(dir => (
             <TouchableOpacity
               key={dir}
-              style={[
-                styles.optionButton,
-                direction === dir && styles.optionButtonActive,
-              ]}
+              style={[styles.optionButton, direction === dir && styles.optionButtonActive]}
               onPress={() => setDirection(dir as 'CW' | 'CCW')}
               disabled={configLocked}
             >
@@ -110,6 +147,7 @@ const LEDConfigScreen: React.FC = () => {
           ))}
         </View>
 
+        {/* Speed */}
         <Text style={styles.label}>Speed: {Math.round(speed)}</Text>
         <Slider
           style={styles.slider}
@@ -135,6 +173,7 @@ const LEDConfigScreen: React.FC = () => {
           placeholder="Enter speed (1-10)"
         />
 
+        {/* Duration */}
         <Text style={styles.label}>Duration: {duration.toFixed(1)} s</Text>
         <Slider
           style={styles.slider}
@@ -160,6 +199,7 @@ const LEDConfigScreen: React.FC = () => {
           placeholder="Enter duration (seconds)"
         />
 
+        {/* Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity
             style={[styles.startButton, (isSending || configLocked) && { opacity: 0.6 }]}
@@ -182,6 +222,7 @@ const LEDConfigScreen: React.FC = () => {
 
 export default LEDConfigScreen;
 
+// 🟦 样式不变
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
