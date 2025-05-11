@@ -7,7 +7,7 @@ import Constants from "expo-constants";
 import { StatusBar } from "react-native";
 
 // API Base URL (fallback if environment variable is missing)
-const API_BASE_URL =  "https://cse-453-vitalgaze.onrender.com";
+const API_BASE_URL =  "https://cse-453-vitalgaze-1.onrender.com";
 
 const HomePage = () => {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -25,11 +25,11 @@ const HomePage = () => {
         const token = await AsyncStorage.getItem("authToken");
         console.log("Auth Token:", token);
 
-        // if (!token) {
-        //   console.log("No auth token found, redirecting to signin");
-        //   router.push('/signinup/signin');
-        //   return;
-        // }
+        if (!token) {
+          console.log("No auth token found, redirecting to signin");
+          router.push('/signinup/signin');
+          return;
+        }
 
         const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
           method: "GET",

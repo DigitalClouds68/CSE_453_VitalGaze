@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from "expo-constants";
 
 // API Base URL (fallback if environment variable is missing)
-const API_BASE_URL =  "https://cse-453-vitalgaze.onrender.com";
+const API_BASE_URL =  "https://cse-453-vitalgaze-1.onrender.com";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -38,7 +38,8 @@ export default function ProfilePage() {
     try {
       const token = await AsyncStorage.getItem('authToken');
       if (!token) {
-        console.warn('No auth token found. Using offline mode.');
+        Alert.alert('Session Expired', 'Please sign in again to continue');
+        router.push('/signinup/signin');
         return null;
       }      
       return token;

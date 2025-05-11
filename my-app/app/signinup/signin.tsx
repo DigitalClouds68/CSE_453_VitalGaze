@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE_URL = "https://cse-453-vitalgaze.onrender.com";
+const API_BASE_URL = "https://cse-453-vitalgaze-1.onrender.com";
 
 const SignInPage: React.FC = () => {
   const [email, setEmail] = useState("");

@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 
-const API = Constants.expoConfig?.extra?.API_URL || 'https://cse-453-vitalgaze.onrender.com';
+const API = Constants.expoConfig?.extra?.API_URL || 'https://cse-453-vitalgaze-1.onrender.com';
 
 export function useHomeData() {
   const [username, setUsername] = useState<string>('');

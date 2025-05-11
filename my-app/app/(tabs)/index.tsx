@@ -28,7 +28,7 @@ const StartPage: React.FC = () => {
           alignItems: 'center',
           marginBottom: 18,
         }}
-        // onPress={() => router.push('/signinup/signup')}
+        onPress={() => router.push('/signinup/signup')}
       >
         <Text style={{ color: '#fff', fontSize: 20, fontWeight: '600' }}>Get Started</Text>
       </TouchableOpacity>
@@ -45,7 +45,7 @@ const StartPage: React.FC = () => {
           alignItems: 'center',
           marginBottom: 18,
         }}
-        // onPress={() => router.push('/signinup/signin')}
+        onPress={() => router.push('/signinup/signin')}
       >
         <Text style={{ color: '#1E567D', fontSize: 20, fontWeight: '600' }}>
           Already have an account

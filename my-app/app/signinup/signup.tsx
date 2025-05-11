@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 
 // API Base URL (fallback if environment variable is missing)
-const API_BASE_URL = Constants.expoConfig?.extra?.API_URL || "https://cse-453-vitalgaze.onrender.com";
+const API_BASE_URL = Constants.expoConfig?.extra?.API_URL || "https://cse-453-vitalgaze-1.onrender.com";
 
 const SignUpPage: React.FC = () => {
   const [email, setEmail] = useState("");
