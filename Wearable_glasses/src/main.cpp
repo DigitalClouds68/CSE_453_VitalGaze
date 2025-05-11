@@ -6,7 +6,6 @@ extern void AI_Detection();
 extern void initWiFi();
 extern void initWebSocketClient();
 extern void updateWebSocketLoop();
-//extern void initBLE();
 extern bool isAIEnabled();
 extern void LED_setup();
 
@@ -15,8 +14,8 @@ void setup() {
   initWiFi();
   initWebSocketClient();
   AIcam_setup();
-  //initBLE();
   LED_setup(); 
+  fanSetup();
 }
 
 void loop() {
