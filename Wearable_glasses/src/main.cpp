@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "main.h"
+#include "project.h"
 
 extern void AIcam_setup();
 extern void AI_Detection();
@@ -15,7 +16,6 @@ void setup() {
   initWebSocketClient();
   AIcam_setup();
   LED_setup(); 
-  fanSetup();
 }
 
 void loop() {
