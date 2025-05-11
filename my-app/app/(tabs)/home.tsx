@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView, Image } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from "expo-constants";
+import { StatusBar } from "react-native";
 
 // API Base URL (fallback if environment variable is missing)
 const API_BASE_URL =  "https://cse-453-vitalgaze-1.onrender.com";
@@ -14,30 +16,43 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
+  // 获取用户信息
   useEffect(() => {
     const fetchUserData = async () => {
       setIsLoading(true);
+      console.log("Starting to fetch user data...");
       try {
         const token = await AsyncStorage.getItem("authToken");
+        console.log("Auth Token:", token);
+
         if (!token) {
+          console.log("No auth token found, redirecting to signin");
           router.push('/signinup/signin');
           return;
         }
+
         const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
           },
         });
+
         if (response.ok) {
           const data = await response.json();
+          console.log("User data received:", data);
+
           if (data && data.user.username) {
             setUsername(data.user.username);
+            // 可选：保存用户名到AsyncStorage以便离线使用
             await AsyncStorage.setItem("username", data.user.username);
           } else {
+            console.log("Invalid user data received");
             router.push('/signinup/signin');
           }
         } else {
+          console.log("Failed to fetch user profile, status:", response.status);
+          // 如果获取用户资料失败，可能是token过期
           if (response.status === 401) {
             await handleTokenExpired();
           } else {
@@ -45,32 +60,50 @@ const HomePage = () => {
             router.push('/signinup/signin');
           }
         }
-      } catch {
-        const localUsername = await AsyncStorage.getItem("username");
-        if (localUsername) {
-          setUsername(localUsername);
-        } else {
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        Alert.alert("Network Error", "Unable to connect to the server.");
+        
+        // 尝试从本地存储获取用户名作为后备方案
+        try {
+          const localUsername = await AsyncStorage.getItem("username");
+          if (localUsername) {
+            setUsername(localUsername);
+            console.log("Local username fetched:", localUsername);
+          } else {
+            router.push('/signinup/signin');
+          }
+        } catch (storageError) {
+          console.error("Error reading from storage:", storageError);
           router.push('/signinup/signin');
         }
       } finally {
         setIsLoading(false);
+        console.log("User data fetch complete.");
       }
     };
 
+    // 获取上次训练数据
     const fetchLastSession = async () => {
       try {
         const lastSessionData = await AsyncStorage.getItem("lastTrainingSession");
+        console.log("Last session data:", lastSessionData);
+        
         if (lastSessionData) {
           setLastSession(JSON.parse(lastSessionData));
         }
-      } catch {}
+      } catch (error) {
+        console.error("Error fetching session data:", error);
+      }
     };
 
     fetchUserData();
     fetchLastSession();
   }, []);
 
+  // 处理Token过期情况
   const handleTokenExpired = async () => {
+    console.log("Token expired, clearing user data...");
     await clearAllUserData();
     Alert.alert(
       "Session Expired",
@@ -79,39 +112,84 @@ const HomePage = () => {
     );
   };
 
+  // 清除所有用户相关数据
   const clearAllUserData = async () => {
-    const keysToRemove = ["authToken", "userData", "userPreferences", "lastTrainingSession", "username"];
-    await AsyncStorage.multiRemove(keysToRemove);
-    setUsername("");
-    setLastSession(null);
+    try {
+      // 创建一个包含所有需要删除的键的数组
+      const keysToRemove = [
+        "authToken", 
+        "userData",
+        "userPreferences",
+        "lastTrainingSession",
+        "username"
+        // 添加其他需要在登出时清除的数据
+      ];
+      
+      // 一次性删除所有键
+      await AsyncStorage.multiRemove(keysToRemove);
+      
+      // 清除内存中的状态
+      setUsername("");
+      setLastSession(null);
+      
+      console.log("All user data cleared successfully");
+    } catch (error) {
+      console.error("Error clearing user data:", error);
+    }
   };
 
+  // 增强的登出处理
   const handleSignOut = async () => {
-    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Sign Out",
-        onPress: async () => {
-          const token = await AsyncStorage.getItem("authToken");
-          if (token) {
+    console.log("Sign out initiated...");
+    Alert.alert(
+      "Sign Out", 
+      "Are you sure you want to sign out?", 
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Sign Out",
+          onPress: async () => {
             try {
-              await fetch(`${API_BASE_URL}/api/auth/logout`, {
-                method: "POST",
-                headers: {
-                  "Authorization": `Bearer ${token}`,
-                  "Content-Type": "application/json"
+              const token = await AsyncStorage.getItem("authToken");
+              console.log("Token on sign out:", token);
+              
+              // 尝试在服务器端也使token失效（如果API支持）
+              if (token) {
+                try {
+                  await fetch(`${API_BASE_URL}/api/auth/logout`, {
+                    method: "POST",
+                    headers: {
+                      "Authorization": `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                    }
+                  });
+                  // 即使服务器请求失败，我们也继续本地登出流程
+                } catch (serverError) {
+                  console.error("Server logout failed, continuing with local logout:", serverError);
                 }
-              });
-            } catch {}
-          }
-          await clearAllUserData();
-          setMenuVisible(false);
-          router.push('/signinup/signin');
+              }
+              
+              // 清除所有用户数据
+              await clearAllUserData();
+              
+              // 关闭菜单
+              setMenuVisible(false);
+              console.log("Menu closed after sign out");
+              
+              // 跳转到登录页面
+              router.push('/signinup/signin');
+            } catch (error) {
+              console.error("Error during sign out:", error);
+              Alert.alert("Error", "Failed to sign out completely. Please try again.");
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
+
+  // 如果正在加载数据，可以显示加载指示器
   if (isLoading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
@@ -129,6 +207,7 @@ const HomePage = () => {
         </TouchableOpacity>
       </View>
 
+      {/* 菜单弹出层 */}
       {menuVisible && (
         <View style={styles.menu}>
           <View style={styles.menuHeader}>
@@ -162,24 +241,6 @@ const HomePage = () => {
         <Text style={styles.subtitle}>Track your eye health and progress</Text>
       </View>
 
-      {/* 🔵 教导用户连接热点提示区域 */}
-      <View style={styles.connectionNotice}>
-  <Icon name="cellular-outline" size={22} color="#1E567D" style={{ marginRight: 8 }} />
-  <View style={{ flex: 1 }}>
-    <Text style={styles.noticeTitle}>Enable Hotspot for Glasses</Text>
-    <Text style={styles.noticeText}>
-      Please enable your phone's hotspot with the following settings:
-      {"\n"}Hotspot Name (SSID): <Text style={styles.bold}>VitalGaze</Text>
-      {"\n"}Password: <Text style={styles.bold}>00000000</Text>
-      {"\n\n"}Your glasses will automatically connect to it.
-    </Text>
-  </View>
-  <TouchableOpacity onPress={() => router.push("/settings")}>
-    <Icon name="chevron-forward-outline" size={24} color="#1E567D" />
-  </TouchableOpacity>
-</View>
-
-
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
           <View style={styles.iconContainer}>
@@ -189,7 +250,7 @@ const HomePage = () => {
           <Text style={styles.statValue}>20</Text>
           <Text style={styles.statSubtext}>completed</Text>
         </View>
-
+        
         <View style={styles.statCard}>
           <View style={styles.iconContainer}>
             <Icon name="time-outline" size={24} color="#1E567D" />
@@ -231,6 +292,7 @@ const HomePage = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
+    padding: 0,
     backgroundColor: "#F4F7F9",
   },
   loadingContainer: {
@@ -245,6 +307,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    width: "100%",
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 15,
@@ -265,8 +328,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     width: 220,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
     elevation: 5,
     zIndex: 20,
+    overflow: "hidden",
   },
   menuHeader: {
     backgroundColor: "#F0F6FA",
@@ -309,39 +377,12 @@ const styles = StyleSheet.create({
     color: "#777",
     textAlign: "center",
   },
-  connectionNotice: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    backgroundColor: "#ECF5FB",
-    padding: 16,
-    marginHorizontal: 20,
-    marginBottom: 15,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  noticeTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1E567D",
-    marginBottom: 4,
-  },
-  noticeText: {
-    fontSize: 14,
-    color: "#333",
-  },
-  bold: {
-    fontWeight: "bold",
-    color: "#1E567D",
-  },
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
     marginBottom: 20,
+    width: "100%",
   },
   statCard: {
     backgroundColor: "#fff",
@@ -349,6 +390,10 @@ const styles = StyleSheet.create({
     padding: 15,
     width: "48%",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
     elevation: 2,
   },
   iconContainer: {
@@ -381,6 +426,10 @@ const styles = StyleSheet.create({
     padding: 18,
     marginHorizontal: 20,
     marginBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 2,
   },
   cardHeader: {

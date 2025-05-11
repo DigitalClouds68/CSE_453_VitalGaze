@@ -18,6 +18,9 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSBluetoothAlwaysUsageDescription": "VitalGaze uses Bluetooth to connect to your eye-tracking device.",
         "NSBluetoothPeripheralUsageDescription": "VitalGaze uses Bluetooth to connect to your eye-tracking device."
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "android": {
@@ -29,8 +32,12 @@
       "permissions": [
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_CONNECT"
-      ]
+      ],
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
@@ -41,7 +48,6 @@
       "expo-router",
       "expo-font",
       "expo-screen-orientation",
-      "react-native-ble-plx"
     ],
     "experiments": {
       "typedRoutes": true
@@ -55,6 +61,9 @@
       "eas": {
         "projectId": "11a3c1ea-d781-4667-b3f9-bac40342cf22"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/11a3c1ea-d781-4667-b3f9-bac40342cf22"
     }
   }
 }

@@ -48,7 +48,7 @@ const SignUpPage: React.FC = () => {
 
     try {
       console.log("Sending API Request to:", `${API_BASE_URL}/api/auth/signup`);
-      const requestBody = JSON.stringify({ email, username, password });
+      const requestBody = JSON.stringify({ email: email.toLowerCase(), username, password });
       console.log("Request Payload:", requestBody);
 
       const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
