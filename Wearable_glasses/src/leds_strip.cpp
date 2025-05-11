@@ -49,7 +49,9 @@ void LED_animationTask(void* param) {
     FastLED.show();
 
     // 👉 计算 LED 当前角度（假设 360° 均匀分布）
-    int angle = (int)(i * 360.0 / NUM_LEDS);
+    // int angle = (int)(i * 360.0 / NUM_LEDS);
+    int angle = (int)(i * 360.0 / NUM_LEDS)/100;
+
     sendLEDAngle(angle);
 
     unsigned long t = millis();
