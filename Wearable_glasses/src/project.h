@@ -13,7 +13,7 @@
 // ==== Pin 配置 ====
 #define NUM_LEDS 24
 #define BUTTON_PIN 0
-#define FAN_PIN 3
+#define FAN_PIN 7
 #define LEFT_LED_PIN 8  // 如需兼容旧版请设为2
 #define RIGHT_LED_PIN 9 // 如需兼容旧版请设为4
 
