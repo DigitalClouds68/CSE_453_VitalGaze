@@ -73,7 +73,7 @@ const LEDConfigScreen: React.FC = () => {
           marginBottom: 10,
           textAlign: 'center',
         }}>
-          WebSocket: {isConnected ? '✅ Connected' : '❌ Not Connected'}
+          WebSocket: {isConnected ? '✅ Connected!!! Ready to get eye data!!!' : '❌ Not Connected'}
         </Text>
 
         {/* 拟合度 */}

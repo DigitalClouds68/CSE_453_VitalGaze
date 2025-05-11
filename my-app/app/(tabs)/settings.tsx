@@ -38,7 +38,7 @@ const SettingsScreen = () => {
         <Text style={styles.statusText}>
           WebSocket Status:{" "}
           <Text style={{ fontWeight: "bold", color: isConnected ? "green" : "red" }}>
-            {isConnected ? "Connected" : "Disconnected"}
+            {isConnected ? "Connected!!! Ready to get eye data!!!" : "Disconnected!!! Please check your connection!!!"}
           </Text>
         </Text>
       </View>
