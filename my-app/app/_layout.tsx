@@ -89,6 +89,10 @@ export default function RootLayout() {
               name="modal"
               options={{ presentation: 'modal' }}
             />
+            <Stack.Screen
+              name="index"
+              options={{ headerShown: false }}
+            />
           </Stack>
         </AppProviders>
       </AIControlProvider>
