@@ -38,10 +38,9 @@ export default function ProfilePage() {
     try {
       const token = await AsyncStorage.getItem('authToken');
       if (!token) {
-        Alert.alert('Session Expired', 'Please sign in again to continue');
-        router.push('/signinup/signin');
+        console.warn('No auth token found. Using offline mode.');
         return null;
-      }
+      }      
       return token;
     } catch (error) {
       console.error('Error retrieving token:', error);
