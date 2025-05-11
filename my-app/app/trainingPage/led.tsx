@@ -1,5 +1,3 @@
-// app/trainingPage/LEDConfigScreen.tsx
-
 import React, { useState } from 'react';
 import {
   View,
@@ -24,14 +22,16 @@ const LEDConfigScreen: React.FC = () => {
   const [speed, setSpeed] = useState<number>(5);
   const [duration, setDuration] = useState<number>(3);
   const [isSending, setIsSending] = useState<boolean>(false);
+  const [configLocked, setConfigLocked] = useState<boolean>(false);
 
-  // 发送 LED 控制命令并启动 AI
   const sendLEDCommand = () => {
     if (!isConnected) {
       Alert.alert('❌ WebSocket not connected!');
       return;
     }
+
     setIsSending(true);
+    setConfigLocked(true);
     sendAICommand('START_AI');
     sendPayload({
       mode: 'LED',
@@ -39,16 +39,21 @@ const LEDConfigScreen: React.FC = () => {
       speed: Math.round(speed),
       duration: Math.round(duration * 1000),
     });
+
+    // 自动停止和解锁
+    setTimeout(() => {
+      stopLED(); // 自动调用停止函数，含解锁逻辑
+    }, duration * 1000);
+
     setTimeout(() => setIsSending(false), 800);
   };
 
-  // 停止 LED 和 AI
   const stopLED = () => {
     sendAICommand('STOP_AI');
     sendPayload({ mode: 'IDLE' });
+    setConfigLocked(false);
   };
 
-  // 计算拟合度
   const calculateMatchScore = () => {
     if (!eyeData) return 0;
     const eyeAngle = eyeData.x * 360;
@@ -60,28 +65,26 @@ const LEDConfigScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* 返回按钮 */}
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={28} color="#1E567D" />
         </TouchableOpacity>
 
         <Text style={styles.title}>LED Training Config</Text>
 
-        {/* 连接状态 */}
-        <Text style={{
-          color: isConnected ? '#28a745' : '#FF4500',
-          marginBottom: 10,
-          textAlign: 'center',
-        }}>
+        <Text
+          style={{
+            color: isConnected ? '#28a745' : '#FF4500',
+            marginBottom: 10,
+            textAlign: 'center',
+          }}
+        >
           WebSocket: {isConnected ? '✅ Connected!!! Ready to get eye data!!!' : '❌ Not Connected'}
         </Text>
 
-        {/* 拟合度 */}
         <Text style={{ color: '#333', fontSize: 16, marginBottom: 8, textAlign: 'center' }}>
           Match Score: {(calculateMatchScore() * 100).toFixed(1)}%
         </Text>
 
-        {/* 方向 */}
         <Text style={styles.label}>Direction</Text>
         <View style={styles.buttonGroup}>
           {['CW', 'CCW'].map(dir => (
@@ -92,11 +95,13 @@ const LEDConfigScreen: React.FC = () => {
                 direction === dir && styles.optionButtonActive,
               ]}
               onPress={() => setDirection(dir as 'CW' | 'CCW')}
+              disabled={configLocked}
             >
               <Text
                 style={[
                   styles.optionText,
                   direction === dir && styles.optionTextActive,
+                  configLocked && { opacity: 0.5 },
                 ]}
               >
                 {dir === 'CW' ? 'Clockwise' : 'Counter-Clockwise'}
@@ -105,7 +110,6 @@ const LEDConfigScreen: React.FC = () => {
           ))}
         </View>
 
-        {/* 速度 */}
         <Text style={styles.label}>Speed: {Math.round(speed)}</Text>
         <Slider
           style={styles.slider}
@@ -114,6 +118,7 @@ const LEDConfigScreen: React.FC = () => {
           step={1}
           value={speed}
           onValueChange={setSpeed}
+          disabled={configLocked}
           minimumTrackTintColor="#00BFFF"
           maximumTrackTintColor="#555"
           thumbTintColor="#00BFFF"
@@ -122,6 +127,7 @@ const LEDConfigScreen: React.FC = () => {
           style={styles.input}
           keyboardType="numeric"
           value={String(speed)}
+          editable={!configLocked}
           onChangeText={text => {
             const val = parseInt(text, 10);
             if (!isNaN(val) && val >= 1 && val <= 10) setSpeed(val);
@@ -129,7 +135,6 @@ const LEDConfigScreen: React.FC = () => {
           placeholder="Enter speed (1-10)"
         />
 
-        {/* 持续时间 */}
         <Text style={styles.label}>Duration: {duration.toFixed(1)} s</Text>
         <Slider
           style={styles.slider}
@@ -138,6 +143,7 @@ const LEDConfigScreen: React.FC = () => {
           step={0.5}
           value={duration}
           onValueChange={setDuration}
+          disabled={configLocked}
           minimumTrackTintColor="#1E90FF"
           maximumTrackTintColor="#555"
           thumbTintColor="#00BFFF"
@@ -146,6 +152,7 @@ const LEDConfigScreen: React.FC = () => {
           style={styles.input}
           keyboardType="numeric"
           value={String(duration)}
+          editable={!configLocked}
           onChangeText={text => {
             const val = parseFloat(text);
             if (!isNaN(val) && val >= 0.5 && val <= 60) setDuration(val);
@@ -153,12 +160,11 @@ const LEDConfigScreen: React.FC = () => {
           placeholder="Enter duration (seconds)"
         />
 
-        {/* 控制按钮 */}
         <View style={styles.actionButtons}>
           <TouchableOpacity
-            style={[styles.startButton, isSending && { opacity: 0.6 }]}
+            style={[styles.startButton, (isSending || configLocked) && { opacity: 0.6 }]}
             onPress={sendLEDCommand}
-            disabled={isSending}
+            disabled={isSending || configLocked}
           >
             <Text style={styles.buttonText}>
               {isSending ? 'Sending...' : 'Start'}
