@@ -1,45 +1,64 @@
-// controllers/trainingController.js
-const TrainingData = require("../models/TrainingData"); // 确保正确导入
-const User = require("../models/User");
+const TrainingData = require("../models/TrainingData");
 
 // 添加训练数据
-exports.addTrainingData = async (req, res) => {
+const addTrainingData = async (req, res) => {
   try {
-    const { trainingType, score, duration } = req.body;
-
-    // 确保 `req.user` 存在
-    if (!req.user || !req.user.userId) {
-      return res.status(401).json({ error: "Unauthorized: Missing user ID" });
-    }
-
-    // 创建训练数据对象
-    const newTrainingData = new TrainingData({
-      userId: req.user.userId, // 通过中间件传入的用户ID
+    const {
       trainingType,
       score,
-      duration
+      duration,
+      direction,
+      speed
+    } = req.body;
+
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({ success: false, error: "Unauthorized: Missing user ID" });
+    }
+
+    const newEntry = new TrainingData({
+      userId: req.user.userId,  // ← 确保 authMiddleware 设置了这个字段
+      trainingType,
+      score,
+      duration,
+      direction,
+      speed
     });
 
-    // 保存到数据库
-    await newTrainingData.save();
-    res.status(201).json({ message: "Training data added successfully" });
+    await newEntry.save();
+    res.status(201).json({
+      success: true,
+      message: "Training data added successfully",
+      data: newEntry
+    });
   } catch (error) {
-    console.error("Error in addTrainingData:", error);
-    res.status(400).json({ error: "Failed to add training data" });
+    console.error("❌ Error in addTrainingData:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
-// 获取用户的训练数据
-exports.getTrainingData = async (req, res) => {
+// 获取当前用户的所有训练数据
+const getTrainingData = async (req, res) => {
   try {
     if (!req.user || !req.user.userId) {
-      return res.status(401).json({ error: "Unauthorized: Missing user ID" });
+      return res.status(401).json({ success: false, error: "Unauthorized: Missing user ID" });
     }
 
+    console.log("✅ Fetching training data for user:", req.user.userId);
+
     const trainingData = await TrainingData.find({ userId: req.user.userId }).sort({ date: -1 });
-    res.json(trainingData);
+
+    res.status(200).json({
+      success: true,
+      count: trainingData.length,
+      data: trainingData
+    });
   } catch (error) {
-    console.error("Error in getTrainingData:", error);
-    res.status(400).json({ error: "Failed to retrieve training data" });
+    console.error("❌ Error in getTrainingData:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
+};
+
+module.exports = {
+  addTrainingData,
+  getTrainingData
 };

@@ -27,7 +27,10 @@ app.use((req, res, next) => {
   next(); // 继续处理请求
 });
 
-// 加载 API 路由
+console.log("authRoutes:", require('./routes/authRoutes'));
+console.log("userRoutes:", require('./routes/userRoutes'));
+console.log("trainingRoutes:", require('./routes/trainingRoutes'));
+
 app.use('/api/auth', require('./routes/authRoutes'));  // 认证路由
 app.use('/api/user', require('./routes/userRoutes'));  // 用户相关路由
 app.use('/api/training', require('./routes/trainingRoutes'));  // 训练相关路由
