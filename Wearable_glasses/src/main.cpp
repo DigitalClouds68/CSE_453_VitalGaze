@@ -1,12 +1,11 @@
 #include <Arduino.h>
-#include "main.h"
+#include "project.h"
 
 extern void AIcam_setup();
 extern void AI_Detection();
 extern void initWiFi();
 extern void initWebSocketClient();
 extern void updateWebSocketLoop();
-//extern void initBLE();
 extern bool isAIEnabled();
 extern void LED_setup();
 
@@ -21,7 +20,7 @@ void setup() {
 
 void loop() {
   updateWebSocketLoop();
-
+  
   if (isAIEnabled()) {
     AI_Detection();
   } else {

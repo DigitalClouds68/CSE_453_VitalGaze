@@ -4,7 +4,7 @@
 #include "freertos/task.h"
 
 extern void updateWebSocketLoop();
-extern void sendLEDAngle(int angle); // 👈 声明外部函数
+extern void sendLEDAngle(int angle);
 
 CRGB ledsLeft[NUM_LEDS];
 CRGB ledsRight[NUM_LEDS];
