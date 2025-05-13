@@ -1,7 +1,4 @@
-#include <FastLED.h>
 #include "project.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
 extern void updateWebSocketLoop();
 extern void sendLEDAngle(int angle);

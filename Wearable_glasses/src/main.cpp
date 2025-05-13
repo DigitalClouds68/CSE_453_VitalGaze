@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "project.h"
 
 extern void AIcam_setup();

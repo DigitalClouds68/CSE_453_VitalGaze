@@ -1,5 +1,4 @@
-#include <Adafruit_SSD1306.h>
-#include "project.h"  // 确保这个头文件有 Mode 的定义等
+#include "project.h"
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32

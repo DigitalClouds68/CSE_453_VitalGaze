@@ -1,5 +1,3 @@
-#include <Wire.h>
-#include <VL53L1X.h>
 #include "project.h"
 
 VL53L1X sensor;

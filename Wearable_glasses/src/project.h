@@ -5,7 +5,12 @@
 #include <FastLED.h>           // WS2812B LED Strip
 #include <Wire.h>              // I2C
 #include <Adafruit_SSD1306.h>  // OLED
+#include <WebSocketsClient.h>
+#include <ArduinoJson.h>
+#include <WiFi.h>
 #include <VL53L1X.h>           // Distance Sensor
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 // ==== Pin Config ====
 #define NUM_LEDS 24

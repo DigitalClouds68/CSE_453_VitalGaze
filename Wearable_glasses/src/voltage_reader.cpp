@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "project.h"
 
 // the loop routine runs over and over again forever:

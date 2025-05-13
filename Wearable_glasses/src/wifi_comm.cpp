@@ -1,6 +1,3 @@
-#include <WiFi.h>
-#include <WebSocketsClient.h>
-#include <ArduinoJson.h>
 #include "project.h"
 
 const char* ssid = "VitalGaze";
