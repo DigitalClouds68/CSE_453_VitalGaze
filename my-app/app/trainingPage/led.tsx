@@ -60,10 +60,15 @@ const LEDConfigScreen: React.FC = () => {
 
   const calculateMatchScore = () => {
     if (!eyeData) return 0;
-    const eyeAngle = eyeData.x * 360;
-    let diff = Math.abs(eyeAngle - ledAngle);
+
+    const normalizedX = eyeData.x > 1 ? eyeData.x / 320 : eyeData.x;
+
+    const eyeAngle = normalizedX * 360;
+    let diff = Math.abs(eyeAngle - ledAngle); 
     if (diff > 180) diff = 360 - diff;
-    return 1 - diff / 180;
+
+    const score = 1 - diff / 180; 
+    return Math.max(0, Math.min(1, score));
   };
 
   const uploadTrainingData = async () => {
