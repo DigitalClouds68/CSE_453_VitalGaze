@@ -1,4 +1,5 @@
 #include "project.h"
+extern bool rainbowActive;
 
 const char* ssid = "VitalGaze";
 const char* password = "00000000";
